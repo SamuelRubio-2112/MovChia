@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Paleta institucional de Chía (tomada del diseño en Figma) -->
+    <color name="chia_blue">#FF0A3B7B</color>
+    <color name="chia_blue_dark">#FF051937</color>
+    <color name="chia_teal">#FF00A8B5</color>
+    <color name="chia_yellow">#FFFFC107</color>
+    <color name="chia_red">#FFDC2626</color>
+    <color name="surface_light">#FFF8FAFC</color>
+</resources>

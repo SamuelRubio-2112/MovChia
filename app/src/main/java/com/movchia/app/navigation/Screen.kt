@@ -1,0 +1,47 @@
+package com.movchia.app.navigation
+
+import com.movchia.app.data.model.AgeGroup
+import kotlinx.serialization.Serializable
+
+/**
+ * Rutas tipadas de Navigation Compose. Cada objeto/clase serializable es un
+ * destino; los parámetros del constructor se convierten en argumentos.
+ */
+sealed interface Screen {
+
+    @Serializable
+    data object Splash : Screen
+
+    @Serializable
+    data object AgeSelection : Screen
+
+    @Serializable
+    data object KidsHome : Screen
+
+    @Serializable
+    data object AdultsHome : Screen
+
+    @Serializable
+    data object SeniorsHome : Screen
+
+    /**
+     * Manual de Tránsito + Asistente IA.
+     * @param simplified muestra la versión en lenguaje claro (Adultos Mayores).
+     * @param initialTab 0 = Manual, 1 = Asistente IA.
+     */
+    @Serializable
+    data class TrafficCode(val simplified: Boolean = false, val initialTab: Int = 0) : Screen
+
+    @Serializable
+    data object AdminLogin : Screen
+
+    @Serializable
+    data object AdminDashboard : Screen
+}
+
+/** Pantalla de inicio que corresponde a cada grupo de edad. */
+fun AgeGroup.homeScreen(): Screen = when (this) {
+    AgeGroup.KIDS -> Screen.KidsHome
+    AgeGroup.ADULTS -> Screen.AdultsHome
+    AgeGroup.SENIORS -> Screen.SeniorsHome
+}
