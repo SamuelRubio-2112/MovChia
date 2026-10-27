@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -30,11 +31,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.movchia.app.ui.components.LargeAccessibleButton
 import com.movchia.app.ui.components.MovChiaTopBar
 import com.movchia.app.ui.theme.ChiaNavy
@@ -55,6 +58,7 @@ fun SeniorsHomeScreen(
     onOpenFaq: () -> Unit,
 ) {
     val context = LocalContext.current
+    val ttsProblem by viewModel.ttsProblem.collectAsStateWithLifecycle()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -73,9 +77,13 @@ fun SeniorsHomeScreen(
             }
         },
         bottomBar = {
+            // El bottomBar personalizado debe consumir el inset de la barra de
+            // navegación: con enableEdgeToEdge(), en Android 8 (3 botones) la
+            // barra del sistema quedaba encima de INICIO / EMERGENCIA.
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .navigationBarsPadding()
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
@@ -124,7 +132,8 @@ fun SeniorsHomeScreen(
             ) {
                 Icon(Icons.Filled.Info, contentDescription = null, tint = Slate800, modifier = Modifier.size(28.dp))
                 Text(
-                    "Seleccione con un toque el botón grande para abrir la información.",
+                    // Si la voz no está disponible, el aviso reemplaza la instrucción.
+                    ttsProblem ?: "Seleccione con un toque el botón grande para abrir la información.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Slate800,
                 )

@@ -13,6 +13,9 @@ class SeniorsHomeViewModel(
 
     val isTtsReady = tts.isReady
 
+    /** Aviso cuando la lectura en voz no es posible (p. ej. voz sin instalar y sin red). */
+    val ttsProblem = tts.problem
+
     fun readScreenAloud() {
         tts.speak(
             "Bienvenido a Mayores Seguros. Seleccione con un toque el botón grande para abrir la información. " +
