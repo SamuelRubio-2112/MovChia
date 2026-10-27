@@ -1,0 +1,3 @@
+package: name='com.movchia.app' versionCode='1' versionName='0.1.0' platformBuildVersionName='17' platformBuildVersionCode='37' compileSdkVersion='37' compileSdkVersionCodename='17'
+minSdkVersion:'33'
+targetSdkVersion:'37'

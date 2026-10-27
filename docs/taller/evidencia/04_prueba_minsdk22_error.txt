@@ -1,0 +1,12 @@
+Calculating task graph as no cached configuration is available for tasks: :app:processDebugMainManifest
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:processDebugGoogleServices UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+
+> Task :app:processDebugMainManifest FAILED
+
+See https://developer.android.com/r/studio-ui/build/manifest-merger for more information about the manifest merger.
+
+3 actionable tasks: 1 executed, 2 up-to-date
+Configuration cache entry stored.

@@ -1,0 +1,6 @@
+Starting: Intent { cmp=com.movchia.app/.MainActivity }
+Status: timeout
+LaunchState: UNKNOWN (-1)
+Activity: com.movchia.app/.MainActivity
+WaitTime: 15995
+Complete

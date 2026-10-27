@@ -1,0 +1,3 @@
+Performing Streamed Install
+adb.exe: failed to install docs/taller/app-debug-sdk33-inicial.apk: Failure [INSTALL_FAILED_OLDER_SDK: Failed parse during installPackageLI: /data/app/vmdl142588396.tmp/base.apk (at Binary XML file line #7): Requires newer sdk version #33 (current version is #26)]
+

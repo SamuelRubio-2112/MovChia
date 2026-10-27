@@ -1,0 +1,26 @@
+== Dispositivo emulator-5554: Android 8.0.0 (API 26), modelo Android SDK built for x86_64
+APK: a6b2f2a7eb97645707e5ff30b600bf248395b7d3d6e3b37967482e96075d4ba4
+INSTALACION: Success (4496 ms)
+INICIO 1: Status: ok TotalTime: 773 
+INICIO 2: Status: ok TotalTime: 954 
+INICIO 3: Status: ok TotalTime: 686 
+F1 selección: 60+ años → COMENZAR EXPERIENCIA
+F1 persistencia tras reinicio: OK (abre en MAYORES SEGUROS)
+F2 con red (logcat):
+10-27 05:18:57.150  6631  6631 D MovChiaTTS: Voz es-US-language, red=false, features=[networkTimeoutMs, networkRetriesCount]
+10-27 05:18:57.181  6254  6675 I TTS     : Synthesis request for locale spa-USA and name es-US-language
+10-27 05:18:57.182  6254  6675 I TTS     : Couldn't read preferred locale from settings.
+10-27 05:18:57.182  6254  6675 I TTS     : TTS dispatch: es-us-x-sfb-lstm-embedded
+10-27 05:18:57.271  6254  6675 I TTS     : 22050, 2, 1
+F2 con red: lectura sin aviso
+F2 sin red (logcat):
+10-27 05:19:14.382  6631  6631 D MovChiaTTS: Voz es-US-language, red=false, features=[networkTimeoutMs, networkRetriesCount]
+10-27 05:19:14.399  6254  6675 I TTS     : TTS dispatch: es-us-x-sfb-lstm-embedded
+F2 sin red: no se mostró aviso (voz local)
+F3 pantalla login: OK
+F3 resultado: text="An internal error has occurred. [ API key not valid. Please pass a valid API key. ]"
+10-27 05:19:56.293  6631  6631 I FirebaseAuth: Logging in as admin@movchia.test with empty reCAPTCHA token
+10-27 05:19:56.722  6631  6631 E RecaptchaCallWrapper: Initial task failed for action RecaptchaAction(action=signInWithPassword)with exception - An internal error has occurred. [ API key not valid. Please pass a valid API key. ]
+CRASHES de com.movchia.app en el buffer crash: 0
+MEMORIA:  TOTAL: 34396 TOTAL SWAP PSS: 0
+== fin emulator-5554

@@ -1,0 +1,4 @@
+10-20 13:37:35.927 31574 31610 I GoogleTTSServiceImpl: Synthesis request for locale spa-USA and name es-US-language
+10-20 13:37:36.638 31574 31610 I GoogleTTSServiceImpl: TTS dispatch: es-us-x-esc-seanet-embedded
+10-20 13:37:36.643 31574 31610 I LocalSynthesizer: Attempting to load synthesizer for voice: es-us-x-esc-seanet-embedded
+10-20 13:37:36.643 31574 31610 I LocalSynthesizer: Voice es-us-x-esc-seanet-embedded is already supported by loaded synthesizer es-us-x-multi.

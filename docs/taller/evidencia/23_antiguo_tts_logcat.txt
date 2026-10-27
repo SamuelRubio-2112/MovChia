@@ -1,0 +1,12 @@
+10-20 13:47:37.084  1920  1920 D ZenLog  : disable_effects: 0|com.android.providers.downloads|0|1:com.google.android.tts|10008,booleanState
+10-20 13:47:38.428  1920  1920 D ZenLog  : disable_effects: 0|com.android.providers.downloads|0|1:com.google.android.tts|10008,booleanState
+10-20 13:47:40.443  1920  1920 D ZenLog  : disable_effects: 0|com.android.providers.downloads|0|1:com.google.android.tts|10008,booleanState
+10-20 13:47:41.055  5718  5757 I TTS     : Synthesis request for locale spa-USA and name es-US-language
+10-20 13:47:41.057  5718  5757 I TTS     : Couldn't read preferred locale from settings.
+10-20 13:47:41.086  5718  5757 I TTS     : es-us-x-sfb (1) has status 2, waiting for download
+10-20 13:47:41.086  5718  5757 I TTS     : Skipping already active download: es-us-x-sfb
+10-20 13:47:41.086  5718  5757 I TTS     : Voice download for es-us-x-sfb-lstm-embedded dispatched
+10-20 13:47:41.086  5718  5757 W TTS     : Local voice not installed, we use the network voice
+10-20 13:47:41.086  5718  5757 I TTS     : TTS dispatch: es-us-x-sfb-server
+10-20 13:47:42.608  1920  1920 D ZenLog  : disable_effects: 0|com.android.providers.downloads|0|1:com.google.android.tts|10008,booleanState
+10-20 13:47:43.078  5718  5757 I TTS     : 16000, 2, 1

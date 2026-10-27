@@ -1,0 +1,19 @@
+== emulator-5554 (API 33)
+TotalTime: 4035
+TotalTime: 3262
+TotalTime: 3763
+TotalTime: 4545
+  Native Heap    14744    14700        8       55    16040    23104    17522     1279
+           Java Heap:    14024                          26644
+         Native Heap:    14700                          16040
+           TOTAL PSS:   122527            TOTAL RSS:   209760       TOTAL SWAP PSS:      414
+== emulator-5556 (API 26)
+TotalTime: 926
+TotalTime: 819
+TotalTime: 919
+TotalTime: 904
+TotalTime: 851
+  Native Heap     4699     4420        0        0    18432    14810     3621
+           Java Heap:     8104
+         Native Heap:     4420
+               TOTAL:    53779       TOTAL SWAP PSS:        0

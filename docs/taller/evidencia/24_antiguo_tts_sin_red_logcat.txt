@@ -1,0 +1,8 @@
+10-20 13:48:11.500  5718  5947 I TTS     : Synthesis request for locale spa-USA and name es-US-language
+10-20 13:48:11.501  5718  5947 I TTS     : Couldn't read preferred locale from settings.
+10-20 13:48:11.506  5718  5947 I TTS     : es-us-x-sfb (1) has status 2, waiting for download
+10-20 13:48:11.506  5718  5947 I TTS     : Skipping already active download: es-us-x-sfb
+10-20 13:48:11.506  5718  5947 I TTS     : Voice download for es-us-x-sfb-lstm-embedded dispatched
+10-20 13:48:11.506  5718  5947 W TTS     : Local voice not installed, we use the network voice
+10-20 13:48:11.506  5718  5947 I TTS     : TTS dispatch: es-us-x-sfb-server
+10-20 13:48:12.166  5718  5947 I TTS     : 16000, 2, 1

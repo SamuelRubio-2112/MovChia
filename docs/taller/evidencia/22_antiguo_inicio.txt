@@ -1,0 +1,7 @@
+Starting: Intent { cmp=com.movchia.app/.MainActivity }
+Status: ok
+Activity: com.movchia.app/.MainActivity
+ThisTime: 977
+TotalTime: 977
+WaitTime: 1013
+Complete

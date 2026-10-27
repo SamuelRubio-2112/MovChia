@@ -1,0 +1,4 @@
+10-20 13:40:32.223 32126 32126 I FirebaseAuth: Logging in as ami with empty reCAPTCHA token
+10-20 13:40:32.822 32126   437 W System  : Ignoring header X-Firebase-Locale because its value was null.
+10-20 13:40:35.423 32126   437 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+10-20 13:40:36.613 32126 32126 E RecaptchaCallWrapper: Initial task failed for action RecaptchaAction(action=signInWithPassword)with exception - A network error (such as timeout, interrupted connection or unreachable host) has occurred.

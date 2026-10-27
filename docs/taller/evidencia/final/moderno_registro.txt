@@ -1,0 +1,31 @@
+== Dispositivo emulator-5556: Android 13 (API 33), modelo sdk_gphone64_x86_64
+APK: a6b2f2a7eb97645707e5ff30b600bf248395b7d3d6e3b37967482e96075d4ba4
+INSTALACION: Success (11452 ms)
+INICIO 1: Status: ok TotalTime: 3189 
+INICIO 2: Status: ok TotalTime: 2862 
+INICIO 3: Status: ok TotalTime: 2343 
+F1 selección: 60+ años → COMENZAR EXPERIENCIA
+F1 persistencia tras reinicio: OK (abre en MAYORES SEGUROS)
+F2 con red (logcat):
+10-27 05:21:36.742   712   736 I GoogleTTSServiceImpl: currentLocale = en-US
+10-27 05:21:37.169   712   736 I GoogleTTSServiceImpl: For default lang en-us is name en-US-language (en-us-x-iog-server)
+10-27 05:21:37.184   712   736 I GoogleTTSServiceImpl: currentLocale = es-US
+10-27 05:21:37.188   712   736 I GoogleTTSServiceImpl: currentLocale = es-US
+10-27 05:21:37.192   712   736 I GoogleTTSServiceImpl: For default lang es-co is name es-US-language (es-us-x-esc-server)
+10-27 05:21:37.198   712   736 I GoogleTTSServiceImpl: currentLocale = es-US
+F2 con red: lectura sin aviso
+(red cortada, verificado con ping)
+F2 sin red (logcat):
+10-27 05:22:00.477   865   865 D MovChiaTTS: Voz es-US-language, red=false, features=[networkTimeoutMs, legacySetLanguageVoice, networkRetriesCount]
+10-27 05:22:00.506   712   919 I GoogleTTSServiceImpl: TTS dispatch: es-us-x-esc-seanet-embedded
+F2 sin red: no se mostró aviso (voz local)
+(red cortada, verificado con ping)
+F3 pantalla login: OK
+F3 resultado: 
+CRASHES de com.movchia.app en el buffer crash: 0
+MEMORIA:  TOTAL PSS: 41930 TOTAL RSS: 136940 TOTAL SWAP PSS: 415
+== fin emulator-5556
+(red cortada, verificado con ping)
+F3 resultado (repetido con teclado oculto): text="A network error (such as timeout, interrupted connection or unreachable host) has occurred."
+10-27 05:23:42.245   865   865 I FirebaseAuth: Logging in as aadmin@movchia.test with empty reCAPTCHA token
+10-27 05:23:42.298   865   865 E RecaptchaCallWrapper: Initial task failed for action RecaptchaAction(action=signInWithPassword)with exception - A network error (such as timeout, interrupted connection or unreachable host) has occurred.
