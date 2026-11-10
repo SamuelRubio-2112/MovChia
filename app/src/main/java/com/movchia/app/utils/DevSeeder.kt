@@ -12,10 +12,20 @@ import kotlinx.coroutines.tasks.await
  */
 object DevSeeder {
 
+    private val obsolete = listOf(
+        FirestoreCollections.CONTENTS to "demo-news-ciclorrutas",
+        FirestoreCollections.CONTENTS to "demo-news-fotomultas",
+        FirestoreCollections.SERVICE_POINTS to "demo-sede-principal",
+        FirestoreCollections.SERVICE_POINTS to "demo-sede-tramites",
+    )
+
     /** Devuelve la cantidad de documentos escritos. */
     suspend fun seed(db: FirebaseFirestore): Int {
         val batch = db.batch()
         var count = 0
+
+        // Documentos de versiones anteriores de DemoData que ya no existen.
+        obsolete.forEach { (collection, id) -> batch.delete(db.collection(collection).document(id)) }
 
         DemoData.contents.forEach {
             batch.set(db.collection(FirestoreCollections.CONTENTS).document(it.id), it); count++

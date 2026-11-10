@@ -28,6 +28,10 @@ import com.movchia.app.ui.screens.kids.KidsHomeViewModel
 import com.movchia.app.ui.screens.quiz.QuizScreen
 import com.movchia.app.ui.screens.quiz.QuizViewModel
 import com.movchia.app.ui.screens.seniors.SeniorsHomeScreen
+import com.movchia.app.ui.screens.service_points.ServicePointDetailScreen
+import com.movchia.app.ui.screens.service_points.ServicePointDetailViewModel
+import com.movchia.app.ui.screens.service_points.ServicePointsListScreen
+import com.movchia.app.ui.screens.service_points.ServicePointsViewModel
 import com.movchia.app.ui.screens.seniors.SeniorsHomeViewModel
 import com.movchia.app.ui.screens.splash.SplashScreen
 import com.movchia.app.ui.screens.traffic_code.TrafficCodeScreen
@@ -109,7 +113,7 @@ fun AppNavigation(
                 viewModel = viewModel,
                 onOpenTrafficCode = { navController.navigate(Screen.TrafficCode()) },
                 onOpenQuiz = { navController.navigate(Screen.Quiz) },
-                onOpenServicePoints = { navController.navigate(Screen.TrafficCode()) },
+                onOpenServicePoints = { navController.navigate(Screen.ServicePoints("Sedes y Puntos")) },
                 onOpenNews = { openList(ContentType.NEWS, "Noticias de Chía") },
                 onOpenHeadline = { headline ->
                     if (headline != null) openDetail(headline.id) else openList(ContentType.NEWS, "Noticias de Chía")
@@ -127,7 +131,7 @@ fun AppNavigation(
             SeniorsHomeScreen(
                 viewModel = viewModel,
                 onOpenSimpleManual = { navController.navigate(Screen.TrafficCode(simplified = true)) },
-                onOpenServicePoints = { navController.navigate(Screen.TrafficCode(simplified = true)) },
+                onOpenServicePoints = { navController.navigate(Screen.ServicePoints("Puntos de atención")) },
                 onOpenVideos = { openList(ContentType.VIDEO, "Videos explicativos") },
                 onOpenFaq = { openList(ContentType.FAQ, "Preguntas frecuentes") },
             )
@@ -174,6 +178,31 @@ fun AppNavigation(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() },
             )
+        }
+
+        composable<Screen.ServicePoints> { backStackEntry ->
+            val route = backStackEntry.toRoute<Screen.ServicePoints>()
+            val viewModel: ServicePointsViewModel = viewModel(
+                factory = viewModelFactory { initializer { ServicePointsViewModel(container.getServicePoints) } },
+            )
+            ServicePointsListScreen(
+                viewModel = viewModel,
+                title = route.title,
+                onBack = { navController.popBackStack() },
+                onOpenPoint = { navController.navigate(Screen.ServicePointDetail(it.id)) },
+            )
+        }
+
+        composable<Screen.ServicePointDetail> { backStackEntry ->
+            val route = backStackEntry.toRoute<Screen.ServicePointDetail>()
+            val viewModel: ServicePointDetailViewModel = viewModel(
+                factory = viewModelFactory {
+                    initializer {
+                        ServicePointDetailViewModel(container.getServicePointById, container.textToSpeech, route.id)
+                    }
+                },
+            )
+            ServicePointDetailScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
         }
 
         composable<Screen.TrafficCode> { backStackEntry ->

@@ -19,13 +19,10 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -63,37 +60,28 @@ fun SeniorsHomeScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            MovChiaTopBar(title = "MAYORES SEGUROS") {
-                Button(
-                    onClick = viewModel::readScreenAloud,
-                    colors = ButtonDefaults.buttonColors(containerColor = ChiaYellow, contentColor = ChiaNavy),
-                    shape = MaterialTheme.shapes.small,
-                    modifier = Modifier.padding(end = 12.dp),
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.VolumeUp, contentDescription = null, modifier = Modifier.size(20.dp))
-                    Spacer(Modifier.size(6.dp))
-                    Text("Escuchar", style = MaterialTheme.typography.labelLarge)
-                }
-            }
+            MovChiaTopBar(title = "MAYORES SEGUROS")
         },
         bottomBar = {
             // El bottomBar personalizado debe consumir el inset de la barra de
             // navegación: con enableEdgeToEdge(), en Android 8 (3 botones) la
-            // barra del sistema quedaba encima de INICIO / EMERGENCIA.
-            Row(
+            // barra del sistema quedaba encima de los botones.
+            // "ESCUCHAR" vive aquí (y no en la barra superior) para que el
+            // título no se corte con la tipografía gigante.
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
                     .padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 LargeAccessibleButton(
-                    text = "INICIO",
-                    onClick = {},
-                    leadingIcon = Icons.Filled.Home,
-                    containerColor = ChiaNavy,
-                    contentColor = White,
-                    modifier = Modifier.weight(1f),
+                    text = "ESCUCHAR",
+                    onClick = viewModel::readScreenAloud,
+                    leadingIcon = Icons.AutoMirrored.Filled.VolumeUp,
+                    containerColor = ChiaYellow,
+                    contentColor = ChiaNavy,
+                    contentDescription = "Escuchar las opciones de esta pantalla",
                 )
                 LargeAccessibleButton(
                     text = "EMERGENCIA ${Constants.EMERGENCY_NUMBER}",
@@ -104,7 +92,6 @@ fun SeniorsHomeScreen(
                     leadingIcon = Icons.Filled.Call,
                     containerColor = ChiaRed,
                     contentColor = White,
-                    modifier = Modifier.weight(1.3f),
                     contentDescription = "Llamar a la línea de emergencia ${Constants.EMERGENCY_NUMBER}",
                 )
             }

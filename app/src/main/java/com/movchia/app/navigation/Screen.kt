@@ -52,6 +52,14 @@ sealed interface Screen {
     @Serializable
     data object Quiz : Screen
 
+    /** Listado de sedes y puntos de atención. */
+    @Serializable
+    data class ServicePoints(val title: String = "Sedes y Puntos") : Screen
+
+    /** Detalle de una sede con "Cómo llegar". */
+    @Serializable
+    data class ServicePointDetail(val id: String) : Screen
+
     @Serializable
     data object AdminLogin : Screen
 

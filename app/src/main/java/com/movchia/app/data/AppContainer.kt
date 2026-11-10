@@ -19,6 +19,7 @@ import com.movchia.app.domain.usecases.AskTrafficAssistantUseCase
 import com.movchia.app.domain.usecases.GetContentByIdUseCase
 import com.movchia.app.domain.usecases.GetContentForAgeGroupUseCase
 import com.movchia.app.domain.usecases.GetQuizQuestionsUseCase
+import com.movchia.app.domain.usecases.GetServicePointByIdUseCase
 import com.movchia.app.domain.usecases.GetServicePointsUseCase
 import com.movchia.app.domain.usecases.GetTrafficCodeArticlesUseCase
 import com.movchia.app.domain.usecases.SaveAgeGroupUseCase
@@ -53,6 +54,7 @@ interface AppContainer {
     val getContentById: GetContentByIdUseCase
     val getQuizQuestions: GetQuizQuestionsUseCase
     val getServicePoints: GetServicePointsUseCase
+    val getServicePointById: GetServicePointByIdUseCase
     val getTrafficCodeArticles: GetTrafficCodeArticlesUseCase
     val askTrafficAssistant: AskTrafficAssistantUseCase
     val signInAdmin: SignInAdminUseCase
@@ -102,6 +104,7 @@ class DefaultAppContainer(
     override val getContentById by lazy { GetContentByIdUseCase(contentRepository) }
     override val getQuizQuestions by lazy { GetQuizQuestionsUseCase(contentRepository) }
     override val getServicePoints by lazy { GetServicePointsUseCase(contentRepository) }
+    override val getServicePointById by lazy { GetServicePointByIdUseCase(contentRepository) }
     override val getTrafficCodeArticles by lazy { GetTrafficCodeArticlesUseCase(trafficCodeRepository) }
     override val askTrafficAssistant by lazy { AskTrafficAssistantUseCase(trafficCodeRepository) }
     override val signInAdmin by lazy { SignInAdminUseCase(authRepository) }

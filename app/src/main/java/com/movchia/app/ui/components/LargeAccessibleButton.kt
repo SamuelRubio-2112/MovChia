@@ -1,6 +1,5 @@
 package com.movchia.app.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -67,25 +66,24 @@ fun LargeAccessibleButton(
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (leadingIcon != null) {
-                    Icon(
-                        imageVector = leadingIcon,
-                        contentDescription = null,
-                        modifier = Modifier.size(28.dp),
-                    )
-                    Spacer(Modifier.width(12.dp))
-                }
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
+            if (leadingIcon != null) {
+                Icon(
+                    imageVector = leadingIcon,
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp),
                 )
+                Spacer(Modifier.width(12.dp))
             }
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
+            )
             if (trailingIcon != null) {
+                Spacer(Modifier.width(8.dp))
                 Icon(
                     imageVector = trailingIcon,
                     contentDescription = null,

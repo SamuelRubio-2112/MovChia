@@ -45,6 +45,13 @@ class GetServicePointsUseCase(private val repository: ContentRepository) {
     suspend operator fun invoke(): Result<List<ServicePoint>> = repository.getServicePoints()
 }
 
+class GetServicePointByIdUseCase(private val repository: ContentRepository) {
+    suspend operator fun invoke(id: String): Result<ServicePoint> {
+        if (id.isBlank()) return Result.failure(IllegalArgumentException("Sede no especificada"))
+        return repository.getServicePointById(id)
+    }
+}
+
 class GetTrafficCodeArticlesUseCase(private val repository: TrafficCodeRepository) {
     suspend operator fun invoke(query: String = ""): Result<List<TrafficCodeArticle>> =
         if (query.isBlank()) repository.getArticles() else repository.searchArticles(query)

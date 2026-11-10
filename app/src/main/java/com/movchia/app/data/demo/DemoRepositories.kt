@@ -41,6 +41,10 @@ class DemoContentRepository : ContentRepository {
     override suspend fun getServicePoints(): Result<List<ServicePoint>> =
         Result.success(DemoData.servicePoints)
 
+    override suspend fun getServicePointById(id: String): Result<ServicePoint> =
+        DemoData.servicePoints.firstOrNull { it.id == id }?.let { Result.success(it) }
+            ?: Result.failure(NoSuchElementException("Esta sede ya no está disponible."))
+
     override suspend fun upsertContent(content: EducationalContent): Result<Unit> {
         val id = content.id.ifBlank { "demo-${System.currentTimeMillis()}" }
         items[id] = content.copy(id = id)
@@ -88,6 +92,7 @@ class SwitchingContentRepository(private val select: () -> ContentRepository) : 
     override suspend fun getContentById(id: String) = select().getContentById(id)
     override suspend fun getQuizQuestions(group: AgeGroup) = select().getQuizQuestions(group)
     override suspend fun getServicePoints() = select().getServicePoints()
+    override suspend fun getServicePointById(id: String) = select().getServicePointById(id)
     override suspend fun upsertContent(content: EducationalContent) = select().upsertContent(content)
     override suspend fun deleteContent(id: String) = select().deleteContent(id)
 }

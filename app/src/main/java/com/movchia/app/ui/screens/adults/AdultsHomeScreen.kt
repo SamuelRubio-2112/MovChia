@@ -17,7 +17,6 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Card
@@ -70,9 +69,8 @@ fun AdultsHomeScreen(
         bottomBar = {
             NavigationBar(containerColor = White) {
                 NavigationBarItem(selected = true, onClick = {}, icon = { Icon(Icons.Filled.Home, null) }, label = { Text("Inicio") })
-                NavigationBarItem(selected = false, onClick = onOpenNews, icon = { Icon(Icons.AutoMirrored.Filled.List, null) }, label = { Text("Contenido") })
+                NavigationBarItem(selected = false, onClick = onOpenNews, icon = { Icon(Icons.Filled.Notifications, null) }, label = { Text("Noticias") })
                 NavigationBarItem(selected = false, onClick = {}, icon = { Icon(Icons.Filled.ThumbUp, null) }, label = { Text("Opiniones") })
-                NavigationBarItem(selected = false, onClick = viewModel::load, icon = { Icon(Icons.Filled.Refresh, null) }, label = { Text("Recargar") })
             }
         },
     ) { padding ->

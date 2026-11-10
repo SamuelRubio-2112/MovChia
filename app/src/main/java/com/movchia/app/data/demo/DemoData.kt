@@ -27,7 +27,11 @@ object DemoData {
     private const val SAMPLE_YOUTUBE = "https://www.youtube.com/watch?v=aqz-KE-bpKQ"
     private const val SAMPLE_MP4_2 = "https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4"
     private const val SAMPLE_MP4_2_THUMB = "https://picsum.photos/seed/movchia-sintel/640/360"
-    private const val SAMPLE_NEWS_THUMB = "https://picsum.photos/seed/movchia-ciclorruta/640/360"
+
+    // Imágenes empaquetadas en app/src/main/assets/seed (sin costo de Storage).
+    private const val ASSET_AGENTES_1 = "file:///android_asset/seed/agentes_transito_1.jpg"
+    private const val ASSET_AGENTES_2 = "file:///android_asset/seed/agentes_transito_2.jpg"
+    private const val ASSET_INFRACTOR_1 = "file:///android_asset/seed/cambio_infractor_1.jpg"
 
     val contents: List<EducationalContent> = listOf(
         // ----- Niños -----
@@ -78,27 +82,75 @@ object DemoData {
         ),
 
         // ----- Jóvenes y Adultos -----
+        // Noticias reales suministradas por la Secretaría de Movilidad (docs/material).
         EducationalContent(
-            id = "demo-news-ciclorrutas",
-            title = "Nuevas ciclorrutas habilitadas en el centro de Chía",
-            description = "La Secretaría de Movilidad habilitó 3,2 kilómetros de ciclorruta entre la Avenida Pradilla " +
-                "y el parque principal. El corredor cuenta con señalización horizontal nueva, bolardos de " +
-                "protección y cruces semaforizados. Se invita a ciclistas y conductores a respetar la " +
-                "separación de carriles y a usar casco y chaleco reflectivo en horas de poca luz.",
+            id = "news-traspaso-persona-indeterminada",
+            title = "Aviso: 2.026 vehículos con traspaso a persona indeterminada deben regularizarse",
+            description = "La Secretaría de Movilidad de Chía, en coordinación con la Unión Temporal Circulemos Chía, " +
+                "informa que, tras el inventario ordenado por el Ministerio de Transporte (Circular Externa " +
+                "20254000000627 del 24 de septiembre de 2025), se identificaron 2.026 vehículos (automóviles y " +
+                "motocicletas) matriculados en Chía que llevan más de tres años en estado de \"traspaso a persona " +
+                "indeterminada\".\n\n" +
+                "Los interesados tienen un plazo de SEIS (6) MESES, contados desde la publicación del aviso, para " +
+                "comparecer ante la Secretaría de Movilidad / Circulemos Chía y:\n" +
+                "• Acreditar su calidad de propietario o adquirente del vehículo.\n" +
+                "• Aportar los documentos exigidos por la normatividad vigente.\n" +
+                "• Formalizar el traspaso ante el Organismo de Tránsito.\n\n" +
+                "Vencido el plazo sin que se presente un interesado, la Secretaría podrá expedir la resolución que " +
+                "ordene la suspensión del registro del vehículo. Un vehículo con registro suspendido no puede " +
+                "circular y, de ser encontrado en vía, puede ser inmovilizado (art. 34, Ley 769 de 2002).\n\n" +
+                "El listado completo de placas está publicado en la sede de la Secretaría (Diagonal 17 No. 6-108, " +
+                "piso 1) y en www.chia-cundinamarca.gov.co.",
             type = ContentType.NEWS,
-            thumbnailUrl = SAMPLE_NEWS_THUMB,
+            mediaUrl = ASSET_AGENTES_1,
+            thumbnailUrl = ASSET_AGENTES_1,
             targetGroups = listOf(AgeGroup.ADULTS),
             publishedAt = now - 1 * DAY_MS,
         ),
         EducationalContent(
-            id = "demo-news-fotomultas",
-            title = "Jornada de capacitación gratuita en normas de tránsito",
-            description = "Este sábado, de 8:00 a.m. a 12:00 m., la Secretaría de Movilidad ofrecerá una jornada " +
-                "gratuita de capacitación sobre el Código Nacional de Tránsito en la Casa de la Cultura. " +
-                "Los asistentes recibirán certificado de participación. Inscripciones en las sedes de atención.",
+            id = "news-patios-abandono",
+            title = "Vehículos con más de un año en patios: 15 días hábiles antes de declararlos en abandono",
+            description = "La Secretaría de Movilidad de Chía, como Organismo de Tránsito del municipio, publica el " +
+                "listado de vehículos que permanecen en los patios oficiales con más de un año de inmovilización, " +
+                "en cumplimiento de la Ley 1730 de 2014.\n\n" +
+                "El propietario, poseedor o tercero con derecho (locatario, acreedor prendario o arrendatario) puede " +
+                "acercarse a la Secretaría, en la Diagonal 17 No. 6-108, piso 1, para subsanar la causa de la " +
+                "inmovilización y pagar lo adeudado por parqueadero y grúa.\n\n" +
+                "Si dentro de los quince (15) días hábiles siguientes a la publicación no se presenta ningún " +
+                "interesado, se declarará administrativamente el abandono de los vehículos y se procederá a su " +
+                "enajenación.\n\n" +
+                "Consulte el listado completo de placas en la sede de la Secretaría o en www.chia-cundinamarca.gov.co.",
             type = ContentType.NEWS,
+            mediaUrl = ASSET_AGENTES_2,
+            thumbnailUrl = ASSET_AGENTES_2,
             targetGroups = listOf(AgeGroup.ADULTS),
-            publishedAt = now - 4 * DAY_MS,
+            publishedAt = now - 2 * DAY_MS,
+        ),
+        EducationalContent(
+            id = "news-cambio-infractor-fotocomparendo",
+            title = "Realiza el cambio de infractor de fotocomparendo en la Sede Electrónica",
+            description = "La Sede Electrónica es el portal virtual que permite a los ciudadanos consultar la " +
+                "información personal y vehicular registrada en el RUNT: infracciones de tránsito, licencias de " +
+                "conducción, vehículos asociados y estado de trámites.\n\n" +
+                "Una de sus funciones permite cambiar al infractor de un fotocomparendo reportado en el SIMIT cuando " +
+                "la multa fue aplicada al propietario del vehículo pero la infracción la cometió otra persona. El " +
+                "cambio debe ser consensuado entre ambas partes.\n\n" +
+                "Paso a paso:\n" +
+                "1. Actualización de datos: verifique que su correo, teléfono y dirección estén al día.\n" +
+                "2. Registro en la Sede Electrónica: ambos infractores deben estar registrados.\n" +
+                "3. Solicitud de cambio: el ciudadano la realiza desde la Sede Electrónica.\n" +
+                "4. Aceptación del comparendo: el nuevo infractor ingresa y acepta el cambio.\n" +
+                "5. Aprobación por parte del Tránsito: el Organismo valida la solicitud y la reporta al SIMIT.\n" +
+                "6. Curso y pago: el nuevo infractor realiza el curso de normas de tránsito y paga la infracción.\n\n" +
+                "Recomendaciones: no aplica para comparendos de SOAT o revisión técnico-mecánica; el comparendo debe " +
+                "estar en el SIMIT en estado pendiente y dentro de los términos legales; el proceso es voluntario y " +
+                "solo aplica si quien asume la infracción es una persona natural. Si el nuevo infractor no acepta o " +
+                "el Tránsito no aprueba el cambio, el comparendo sigue asociado al infractor inicial.",
+            type = ContentType.NEWS,
+            mediaUrl = ASSET_INFRACTOR_1,
+            thumbnailUrl = ASSET_INFRACTOR_1,
+            targetGroups = listOf(AgeGroup.ADULTS, AgeGroup.SENIORS),
+            publishedAt = now - 3 * DAY_MS,
         ),
         EducationalContent(
             id = "demo-campaign-peaton",
@@ -199,25 +251,16 @@ object DemoData {
         ),
     )
 
-    // Coordenadas aproximadas del centro de Chía. Verificar con la Secretaría.
+    // Datos tomados del pie de página de los avisos oficiales (docs/material).
+    // Horario y coordenadas pendientes de confirmar con la Secretaría.
     val servicePoints: List<ServicePoint> = listOf(
         ServicePoint(
-            id = "demo-sede-principal",
-            name = "Secretaría de Movilidad · Sede principal",
-            address = "Carrera 11 No. 11-29, Chía (Alcaldía Municipal)",
-            phone = "(601) 884 4444",
+            id = "sede-secretaria-movilidad",
+            name = "Secretaría de Movilidad de Chía",
+            address = "Diagonal 17 No. 6-108, piso 1, Chía (Cundinamarca)",
+            phone = "(601) 884 4444 ext. 3505",
             schedule = "Lunes a viernes, 8:00 a.m. a 5:00 p.m.",
-            latitude = 4.8617,
-            longitude = -74.0583,
-        ),
-        ServicePoint(
-            id = "demo-sede-tramites",
-            name = "Punto de trámites de tránsito",
-            address = "Calle 10 No. 9-50, Chía",
-            phone = "(601) 884 4455",
-            schedule = "Lunes a viernes, 7:30 a.m. a 4:30 p.m.",
-            latitude = 4.8602,
-            longitude = -74.0591,
+            email = "correspondencia.chia@datatools.com.co",
         ),
     )
 
