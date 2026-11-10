@@ -58,6 +58,7 @@ fun KidsHomeScreen(
     onOpenCartoon: (EducationalContent?) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val points by viewModel.points.collectAsStateWithLifecycle()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -85,7 +86,6 @@ fun KidsHomeScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text("¡Hola, Futuro Conductor! 🚗", style = MaterialTheme.typography.titleMedium, color = ChiaNavy)
-                val points = (state as? UiState.Success)?.data?.points ?: 0
                 Box(
                     modifier = Modifier
                         .clip(MaterialTheme.shapes.small)

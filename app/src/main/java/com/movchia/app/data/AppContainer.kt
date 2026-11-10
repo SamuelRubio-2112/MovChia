@@ -6,6 +6,7 @@ import com.movchia.app.data.demo.DemoTrafficCodeRepository
 import com.movchia.app.data.demo.SwitchingContentRepository
 import com.movchia.app.data.demo.SwitchingTrafficCodeRepository
 import com.movchia.app.data.local.AgeGroupLocalStore
+import com.movchia.app.data.local.PointsLocalStore
 import com.movchia.app.data.remote.FirebaseModule
 import com.movchia.app.data.remote.PlaceholderTrafficAssistantApi
 import com.movchia.app.data.repository.AuthRepository
@@ -34,6 +35,7 @@ import kotlinx.coroutines.flow.asStateFlow
  */
 interface AppContainer {
     val ageGroupStore: AgeGroupLocalStore
+    val pointsStore: PointsLocalStore
     val contentRepository: ContentRepository
     val authRepository: AuthRepository
     val trafficCodeRepository: TrafficCodeRepository
@@ -64,6 +66,7 @@ class DefaultAppContainer(
     private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     override val ageGroupStore = AgeGroupLocalStore(context)
+    override val pointsStore = PointsLocalStore(context)
 
     private val _demoMode = MutableStateFlow(allowDemoMode && prefs.getBoolean(KEY_DEMO_MODE, false))
     override val demoMode: StateFlow<Boolean> = _demoMode.asStateFlow()

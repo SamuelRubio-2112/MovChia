@@ -45,6 +45,13 @@ sealed interface Screen {
     @Serializable
     data class ContentDetail(val id: String) : Screen
 
+    /**
+     * Quiz reutilizable para el grupo de edad activo: "Adivina la Señal"
+     * (Niños) o "Quiz de Tránsito" (Jóvenes y Adultos).
+     */
+    @Serializable
+    data object Quiz : Screen
+
     @Serializable
     data object AdminLogin : Screen
 

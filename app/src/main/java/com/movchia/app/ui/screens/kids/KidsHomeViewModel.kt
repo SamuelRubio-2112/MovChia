@@ -2,6 +2,7 @@ package com.movchia.app.ui.screens.kids
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.movchia.app.data.local.PointsLocalStore
 import com.movchia.app.data.model.AgeGroup
 import com.movchia.app.data.model.ContentType
 import com.movchia.app.data.model.EducationalContent
@@ -16,16 +17,19 @@ import kotlinx.coroutines.launch
 data class KidsHomeData(
     val stories: List<EducationalContent>,
     val cartoons: List<EducationalContent>,
-    val points: Int = 0,
 )
 
 /** Pantalla 03_Home_Ninos: cuento del día, dibujos de seguridad y juegos. */
 class KidsHomeViewModel(
     private val getContent: GetContentForAgeGroupUseCase,
+    pointsStore: PointsLocalStore,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<KidsHomeData>>(UiState.Loading)
     val uiState: StateFlow<UiState<KidsHomeData>> = _uiState.asStateFlow()
+
+    /** Puntos ganados en "Adivina la Señal"; se muestran en el encabezado. */
+    val points: StateFlow<Int> = pointsStore.points(AgeGroup.KIDS)
 
     init {
         load()

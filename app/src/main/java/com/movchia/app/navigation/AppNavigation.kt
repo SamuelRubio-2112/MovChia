@@ -25,6 +25,8 @@ import com.movchia.app.ui.screens.content.ContentListScreen
 import com.movchia.app.ui.screens.content.ContentListViewModel
 import com.movchia.app.ui.screens.kids.KidsHomeScreen
 import com.movchia.app.ui.screens.kids.KidsHomeViewModel
+import com.movchia.app.ui.screens.quiz.QuizScreen
+import com.movchia.app.ui.screens.quiz.QuizViewModel
 import com.movchia.app.ui.screens.seniors.SeniorsHomeScreen
 import com.movchia.app.ui.screens.seniors.SeniorsHomeViewModel
 import com.movchia.app.ui.screens.splash.SplashScreen
@@ -36,7 +38,7 @@ import com.movchia.app.ui.screens.traffic_code.TrafficCodeViewModel
  *
  * Splash → (edad guardada ? Home del grupo : AgeSelection)
  * AgeSelection → KidsHome | AdultsHome | SeniorsHome | AdminLogin
- * Homes → TrafficCode (manual + IA) | ContentList (por tipo) | ContentDetail
+ * Homes → TrafficCode (manual + IA) | ContentList (por tipo) | ContentDetail | Quiz
  * ContentList → ContentDetail
  * AdminLogin → AdminDashboard → ContentDetail (vista previa)
  */
@@ -82,11 +84,13 @@ fun AppNavigation(
 
         composable<Screen.KidsHome> {
             val viewModel: KidsHomeViewModel = viewModel(
-                factory = viewModelFactory { initializer { KidsHomeViewModel(container.getContentForAgeGroup) } },
+                factory = viewModelFactory {
+                    initializer { KidsHomeViewModel(container.getContentForAgeGroup, container.pointsStore) }
+                },
             )
             KidsHomeScreen(
                 viewModel = viewModel,
-                onOpenQuiz = { navController.navigate(Screen.TrafficCode(simplified = true)) },
+                onOpenQuiz = { navController.navigate(Screen.Quiz) },
                 onOpenVideos = { openList(ContentType.CARTOON, "Dibujos de Seguridad") },
                 onOpenStory = { story ->
                     if (story != null) openDetail(story.id) else openList(ContentType.STORY, "Cuentos")
@@ -104,7 +108,7 @@ fun AppNavigation(
             AdultsHomeScreen(
                 viewModel = viewModel,
                 onOpenTrafficCode = { navController.navigate(Screen.TrafficCode()) },
-                onOpenQuiz = { navController.navigate(Screen.TrafficCode(initialTab = 1)) },
+                onOpenQuiz = { navController.navigate(Screen.Quiz) },
                 onOpenServicePoints = { navController.navigate(Screen.TrafficCode()) },
                 onOpenNews = { openList(ContentType.NEWS, "Noticias de Chía") },
                 onOpenHeadline = { headline ->
@@ -154,6 +158,19 @@ fun AppNavigation(
                 },
             )
             ContentDetailScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        composable<Screen.Quiz> {
+            val group = container.ageGroupStore.ageGroup.value ?: AgeGroup.ADULTS
+            val viewModel: QuizViewModel = viewModel(
+                factory = viewModelFactory {
+                    initializer { QuizViewModel(container.getQuizQuestions, container.pointsStore, group) }
+                },
+            )
+            QuizScreen(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() },
             )
