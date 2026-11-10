@@ -3,6 +3,8 @@ package com.movchia.app.data.demo
 import com.movchia.app.data.model.AgeGroup
 import com.movchia.app.data.model.ContentType
 import com.movchia.app.data.model.EducationalContent
+import com.movchia.app.data.model.Forum
+import com.movchia.app.data.model.ForumPost
 import com.movchia.app.data.model.QuizQuestion
 import com.movchia.app.data.model.ServicePoint
 import com.movchia.app.data.model.TrafficCodeArticle
@@ -274,6 +276,58 @@ object DemoData {
             latitude = 4.86381,
             longitude = -74.05509,
             mapsUrl = "https://maps.app.goo.gl/ZX4RVgGzzyCp81ng7",
+        ),
+    )
+
+    // Foros de opinión (moderación posterior). Los temas los define la Secretaría.
+    val forums: List<Forum> = listOf(
+        Forum(
+            id = "foro-ciclorrutas",
+            title = "Ciclorrutas y bicicleta",
+            description = "¿Cómo mejorar la red de ciclorrutas y la seguridad de quienes pedalean?",
+            emoji = "🚲",
+            createdAt = now - 3 * DAY_MS,
+        ),
+        Forum(
+            id = "foro-fotomultas",
+            title = "Fotodetección y comparendos",
+            description = "Opiniones sobre las cámaras, la señalización y el proceso de los comparendos.",
+            emoji = "📸",
+            createdAt = now - 2 * DAY_MS,
+        ),
+        Forum(
+            id = "foro-peatones",
+            title = "Peatones y andenes",
+            description = "Cruces, pasos cebra, andenes y accesibilidad para todas las personas.",
+            emoji = "🚶",
+            createdAt = now - 1 * DAY_MS,
+        ),
+    )
+
+    val forumPosts: List<ForumPost> = listOf(
+        ForumPost(
+            id = "demo-post-1",
+            forumId = "foro-ciclorrutas",
+            authorId = "demo",
+            nickname = "Ciclista de Chía",
+            text = "La ciclorruta de la Pradilla quedó muy bien, pero en la noche falta iluminación cerca del parque.",
+            createdAt = now - 2 * DAY_MS,
+        ),
+        ForumPost(
+            id = "demo-post-2",
+            forumId = "foro-ciclorrutas",
+            authorId = "demo",
+            nickname = "Mamá en bici",
+            text = "Sería ideal poner bicicleteros en los colegios para que los niños lleguen pedaleando.",
+            createdAt = now - 1 * DAY_MS,
+        ),
+        ForumPost(
+            id = "demo-post-3",
+            forumId = "foro-peatones",
+            authorId = "demo",
+            nickname = "Vecino del centro",
+            text = "El paso cebra frente a la Alcaldía necesita repintarse, casi no se ve con lluvia.",
+            createdAt = now - 5 * 60 * 60 * 1000,
         ),
     )
 

@@ -2,21 +2,29 @@ package com.movchia.app.data
 
 import android.content.Context
 import com.movchia.app.data.demo.DemoContentRepository
+import com.movchia.app.data.demo.DemoForumRepository
+import com.movchia.app.data.demo.SwitchingForumRepository
 import com.movchia.app.data.demo.DemoTrafficCodeRepository
 import com.movchia.app.data.demo.SwitchingContentRepository
 import com.movchia.app.data.demo.SwitchingTrafficCodeRepository
 import com.movchia.app.data.local.AgeGroupLocalStore
 import com.movchia.app.data.local.PointsLocalStore
+import com.movchia.app.data.local.UserProfileLocalStore
 import com.movchia.app.data.remote.FirebaseModule
 import com.movchia.app.data.remote.PlaceholderTrafficAssistantApi
 import com.movchia.app.data.repository.AuthRepository
 import com.movchia.app.data.repository.ContentRepository
 import com.movchia.app.data.repository.FirebaseAuthRepository
 import com.movchia.app.data.repository.FirebaseContentRepository
+import com.movchia.app.data.repository.FirebaseForumRepository
+import com.movchia.app.data.repository.ForumRepository
 import com.movchia.app.data.repository.FirebaseTrafficCodeRepository
 import com.movchia.app.data.repository.TrafficCodeRepository
 import com.movchia.app.domain.usecases.AskTrafficAssistantUseCase
 import com.movchia.app.domain.usecases.GetContentByIdUseCase
+import com.movchia.app.domain.usecases.GetForumPostsUseCase
+import com.movchia.app.domain.usecases.GetForumsUseCase
+import com.movchia.app.domain.usecases.PublishForumPostUseCase
 import com.movchia.app.domain.usecases.GetContentForAgeGroupUseCase
 import com.movchia.app.domain.usecases.GetQuizQuestionsUseCase
 import com.movchia.app.domain.usecases.GetServicePointByIdUseCase
@@ -37,6 +45,8 @@ import kotlinx.coroutines.flow.asStateFlow
 interface AppContainer {
     val ageGroupStore: AgeGroupLocalStore
     val pointsStore: PointsLocalStore
+    val userProfileStore: UserProfileLocalStore
+    val forumRepository: ForumRepository
     val contentRepository: ContentRepository
     val authRepository: AuthRepository
     val trafficCodeRepository: TrafficCodeRepository
@@ -58,6 +68,9 @@ interface AppContainer {
     val getTrafficCodeArticles: GetTrafficCodeArticlesUseCase
     val askTrafficAssistant: AskTrafficAssistantUseCase
     val signInAdmin: SignInAdminUseCase
+    val getForums: GetForumsUseCase
+    val getForumPosts: GetForumPostsUseCase
+    val publishForumPost: PublishForumPostUseCase
 }
 
 class DefaultAppContainer(
@@ -69,6 +82,7 @@ class DefaultAppContainer(
 
     override val ageGroupStore = AgeGroupLocalStore(context)
     override val pointsStore = PointsLocalStore(context)
+    override val userProfileStore = UserProfileLocalStore(context)
 
     private val _demoMode = MutableStateFlow(allowDemoMode && prefs.getBoolean(KEY_DEMO_MODE, false))
     override val demoMode: StateFlow<Boolean> = _demoMode.asStateFlow()
@@ -96,6 +110,11 @@ class DefaultAppContainer(
     override val trafficCodeRepository: TrafficCodeRepository =
         SwitchingTrafficCodeRepository { if (_demoMode.value) demoTrafficCode else firebaseTrafficCode }
 
+    private val firebaseForums: ForumRepository by lazy { FirebaseForumRepository(FirebaseModule.firestore) }
+    private val demoForums: ForumRepository by lazy { DemoForumRepository() }
+    override val forumRepository: ForumRepository =
+        SwitchingForumRepository { if (_demoMode.value) demoForums else firebaseForums }
+
     override val authRepository: AuthRepository by lazy { FirebaseAuthRepository(FirebaseModule.auth) }
     override val textToSpeech: TextToSpeechHelper by lazy { TextToSpeechHelper(context) }
 
@@ -108,6 +127,13 @@ class DefaultAppContainer(
     override val getTrafficCodeArticles by lazy { GetTrafficCodeArticlesUseCase(trafficCodeRepository) }
     override val askTrafficAssistant by lazy { AskTrafficAssistantUseCase(trafficCodeRepository) }
     override val signInAdmin by lazy { SignInAdminUseCase(authRepository) }
+    override val getForums by lazy { GetForumsUseCase(forumRepository) }
+    override val getForumPosts by lazy { GetForumPostsUseCase(forumRepository) }
+    override val publishForumPost by lazy {
+        PublishForumPostUseCase(forumRepository) {
+            if (_demoMode.value) Result.success("demo-user") else authRepository.ensureSession()
+        }
+    }
 
     private companion object {
         const val PREFS_NAME = "movchia_dev_prefs"

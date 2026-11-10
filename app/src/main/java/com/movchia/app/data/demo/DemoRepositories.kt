@@ -4,10 +4,13 @@ import com.movchia.app.data.model.AgeGroup
 import com.movchia.app.data.model.AssistantMessage
 import com.movchia.app.data.model.ContentType
 import com.movchia.app.data.model.EducationalContent
+import com.movchia.app.data.model.Forum
+import com.movchia.app.data.model.ForumPost
 import com.movchia.app.data.model.QuizQuestion
 import com.movchia.app.data.model.ServicePoint
 import com.movchia.app.data.model.TrafficCodeArticle
 import com.movchia.app.data.repository.ContentRepository
+import com.movchia.app.data.repository.ForumRepository
 import com.movchia.app.data.repository.TrafficCodeRepository
 import kotlinx.coroutines.delay
 
@@ -95,6 +98,49 @@ class SwitchingContentRepository(private val select: () -> ContentRepository) : 
     override suspend fun getServicePointById(id: String) = select().getServicePointById(id)
     override suspend fun upsertContent(content: EducationalContent) = select().upsertContent(content)
     override suspend fun deleteContent(id: String) = select().deleteContent(id)
+}
+
+class DemoForumRepository : ForumRepository {
+    private val posts = DemoData.forumPosts.toMutableList()
+
+    override suspend fun getForums(): Result<List<Forum>> =
+        Result.success(DemoData.forums.filter { it.open }.sortedByDescending { it.createdAt })
+
+    override suspend fun getForum(id: String): Result<Forum> =
+        DemoData.forums.firstOrNull { it.id == id }?.let { Result.success(it) }
+            ?: Result.failure(NoSuchElementException("Este foro ya no está disponible."))
+
+    override suspend fun getPosts(forumId: String, limit: Int): Result<List<ForumPost>> =
+        Result.success(
+            posts.filter { it.forumId == forumId && !it.hidden }.sortedByDescending { it.createdAt }.take(limit),
+        )
+
+    override suspend fun publishPost(post: ForumPost): Result<ForumPost> {
+        val saved = post.copy(id = "demo-post-${System.currentTimeMillis()}", hidden = false)
+        posts.add(saved)
+        return Result.success(saved)
+    }
+
+    override suspend fun setPostHidden(forumId: String, postId: String, hidden: Boolean): Result<Unit> {
+        val i = posts.indexOfFirst { it.id == postId }
+        if (i >= 0) posts[i] = posts[i].copy(hidden = hidden)
+        return Result.success(Unit)
+    }
+
+    override suspend fun deletePost(forumId: String, postId: String): Result<Unit> {
+        posts.removeAll { it.id == postId }
+        return Result.success(Unit)
+    }
+}
+
+class SwitchingForumRepository(private val select: () -> ForumRepository) : ForumRepository {
+    override suspend fun getForums() = select().getForums()
+    override suspend fun getForum(id: String) = select().getForum(id)
+    override suspend fun getPosts(forumId: String, limit: Int) = select().getPosts(forumId, limit)
+    override suspend fun publishPost(post: ForumPost) = select().publishPost(post)
+    override suspend fun setPostHidden(forumId: String, postId: String, hidden: Boolean) =
+        select().setPostHidden(forumId, postId, hidden)
+    override suspend fun deletePost(forumId: String, postId: String) = select().deletePost(forumId, postId)
 }
 
 class SwitchingTrafficCodeRepository(private val select: () -> TrafficCodeRepository) : TrafficCodeRepository {

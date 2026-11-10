@@ -54,6 +54,8 @@ fun AdultsHomeScreen(
     onOpenQuiz: () -> Unit,
     onOpenServicePoints: () -> Unit,
     onOpenNews: () -> Unit,
+    onOpenNotifications: () -> Unit,
+    onOpenOpinions: () -> Unit,
     onOpenHeadline: (EducationalContent?) -> Unit,
     onOpenCampaign: (EducationalContent?) -> Unit,
 ) {
@@ -63,14 +65,14 @@ fun AdultsHomeScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             MovChiaTopBar(title = "MovChia") {
-                IconButton(onClick = {}) { Icon(Icons.Filled.Notifications, contentDescription = "Notificaciones") }
+                IconButton(onClick = onOpenNotifications) { Icon(Icons.Filled.Notifications, contentDescription = "Notificaciones") }
             }
         },
         bottomBar = {
             NavigationBar(containerColor = White) {
                 NavigationBarItem(selected = true, onClick = {}, icon = { Icon(Icons.Filled.Home, null) }, label = { Text("Inicio") })
                 NavigationBarItem(selected = false, onClick = onOpenNews, icon = { Icon(Icons.Filled.Notifications, null) }, label = { Text("Noticias") })
-                NavigationBarItem(selected = false, onClick = {}, icon = { Icon(Icons.Filled.ThumbUp, null) }, label = { Text("Opiniones") })
+                NavigationBarItem(selected = false, onClick = onOpenOpinions, icon = { Icon(Icons.Filled.ThumbUp, null) }, label = { Text("Opiniones") })
             }
         },
     ) { padding ->

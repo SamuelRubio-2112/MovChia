@@ -60,6 +60,17 @@ sealed interface Screen {
     @Serializable
     data class ServicePointDetail(val id: String) : Screen
 
+    /** Centro de notificaciones (por ahora solo vista con datos de muestra). */
+    @Serializable
+    data object Notifications : Screen
+
+    /** Foros de opinión ("Opiniones"). */
+    @Serializable
+    data object Forums : Screen
+
+    @Serializable
+    data class ForumDetail(val id: String, val title: String) : Screen
+
     @Serializable
     data object AdminLogin : Screen
 

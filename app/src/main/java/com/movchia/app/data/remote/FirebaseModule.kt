@@ -22,9 +22,14 @@ object FirestoreCollections {
     const val TRAFFIC_CODE = "traffic_code"
     const val SERVICE_POINTS = "service_points"
     const val OPINIONS = "opinions"
+    const val FORUMS = "forums"
+    const val POSTS = "posts"
 
     const val FIELD_TARGET_GROUPS = "targetGroups"
     const val FIELD_PUBLISHED = "published"
     const val FIELD_PUBLISHED_AT = "publishedAt"
     const val FIELD_ORDER = "order"
+    const val FIELD_OPEN = "open"
+    const val FIELD_HIDDEN = "hidden"
+    const val FIELD_CREATED_AT = "createdAt"
 }

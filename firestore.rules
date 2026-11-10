@@ -64,6 +64,30 @@ service cloud.firestore {
       allow read, update, delete: if isStaff();
     }
 
+    // Foros de opinión (moderación POSTERIOR). Cualquiera lee los foros
+    // abiertos y los comentarios visibles; para comentar basta una sesión
+    // anónima de Firebase Auth. El personal oculta o borra comentarios.
+    match /forums/{forumId} {
+      allow read: if resource.data.open == true || isStaff();
+      allow write: if isStaff();
+
+      match /posts/{postId} {
+        allow read: if resource.data.hidden == false || isStaff();
+        allow create: if isSignedIn()
+          && request.resource.data.keys().hasOnly(['authorId', 'nickname', 'text', 'createdAt', 'hidden'])
+          && request.resource.data.authorId == request.auth.uid
+          && request.resource.data.nickname is string
+          && request.resource.data.nickname.size() >= 3
+          && request.resource.data.nickname.size() <= 20
+          && request.resource.data.text is string
+          && request.resource.data.text.size() >= 5
+          && request.resource.data.text.size() <= 500
+          && request.resource.data.createdAt is int
+          && request.resource.data.hidden == false;
+        allow update, delete: if isStaff();
+      }
+    }
+
     // Usuarios del CMS. Cada uno lee su propio documento; solo root administra.
     match /users/{userId} {
       allow read: if isSignedIn() && (request.auth.uid == userId || isRoot());

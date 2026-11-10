@@ -39,6 +39,22 @@ object DevSeeder {
         DemoData.quizQuestions.forEach {
             batch.set(db.collection(FirestoreCollections.QUIZ_QUESTIONS).document(it.id), it); count++
         }
+        DemoData.forums.forEach {
+            batch.set(db.collection(FirestoreCollections.FORUMS).document(it.id), it); count++
+        }
+        DemoData.forumPosts.forEach {
+            batch.set(
+                db.collection(FirestoreCollections.FORUMS).document(it.forumId)
+                    .collection(FirestoreCollections.POSTS).document(it.id),
+                mapOf(
+                    "authorId" to it.authorId,
+                    "nickname" to it.nickname,
+                    "text" to it.text,
+                    "createdAt" to it.createdAt,
+                    "hidden" to it.hidden,
+                ),
+            ); count++
+        }
 
         batch.commit().await()
         return count

@@ -23,8 +23,13 @@ import com.movchia.app.ui.screens.content.ContentDetailScreen
 import com.movchia.app.ui.screens.content.ContentDetailViewModel
 import com.movchia.app.ui.screens.content.ContentListScreen
 import com.movchia.app.ui.screens.content.ContentListViewModel
+import com.movchia.app.ui.screens.forum.ForumDetailScreen
+import com.movchia.app.ui.screens.forum.ForumDetailViewModel
+import com.movchia.app.ui.screens.forum.ForumsScreen
+import com.movchia.app.ui.screens.forum.ForumsViewModel
 import com.movchia.app.ui.screens.kids.KidsHomeScreen
 import com.movchia.app.ui.screens.kids.KidsHomeViewModel
+import com.movchia.app.ui.screens.notifications.NotificationsScreen
 import com.movchia.app.ui.screens.quiz.QuizScreen
 import com.movchia.app.ui.screens.quiz.QuizViewModel
 import com.movchia.app.ui.screens.seniors.SeniorsHomeScreen
@@ -115,6 +120,8 @@ fun AppNavigation(
                 onOpenQuiz = { navController.navigate(Screen.Quiz) },
                 onOpenServicePoints = { navController.navigate(Screen.ServicePoints("Sedes y Puntos")) },
                 onOpenNews = { openList(ContentType.NEWS, "Noticias de Chía") },
+                onOpenNotifications = { navController.navigate(Screen.Notifications) },
+                onOpenOpinions = { navController.navigate(Screen.Forums) },
                 onOpenHeadline = { headline ->
                     if (headline != null) openDetail(headline.id) else openList(ContentType.NEWS, "Noticias de Chía")
                 },
@@ -178,6 +185,38 @@ fun AppNavigation(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() },
             )
+        }
+
+        composable<Screen.Notifications> {
+            NotificationsScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable<Screen.Forums> {
+            val viewModel: ForumsViewModel = viewModel(
+                factory = viewModelFactory { initializer { ForumsViewModel(container.getForums) } },
+            )
+            ForumsScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                onOpenForum = { navController.navigate(Screen.ForumDetail(it.id, it.title)) },
+            )
+        }
+
+        composable<Screen.ForumDetail> { backStackEntry ->
+            val route = backStackEntry.toRoute<Screen.ForumDetail>()
+            val viewModel: ForumDetailViewModel = viewModel(
+                factory = viewModelFactory {
+                    initializer {
+                        ForumDetailViewModel(
+                            container.getForumPosts,
+                            container.publishForumPost,
+                            container.userProfileStore,
+                            route.id,
+                        )
+                    }
+                },
+            )
+            ForumDetailScreen(viewModel = viewModel, title = route.title, onBack = { navController.popBackStack() })
         }
 
         composable<Screen.ServicePoints> { backStackEntry ->

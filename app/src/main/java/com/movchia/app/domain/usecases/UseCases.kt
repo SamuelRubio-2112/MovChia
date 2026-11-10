@@ -5,11 +5,14 @@ import com.movchia.app.data.model.AgeGroup
 import com.movchia.app.data.model.AssistantMessage
 import com.movchia.app.data.model.ContentType
 import com.movchia.app.data.model.EducationalContent
+import com.movchia.app.data.model.Forum
+import com.movchia.app.data.model.ForumPost
 import com.movchia.app.data.model.QuizQuestion
 import com.movchia.app.data.model.ServicePoint
 import com.movchia.app.data.model.TrafficCodeArticle
 import com.movchia.app.data.repository.AuthRepository
 import com.movchia.app.data.repository.ContentRepository
+import com.movchia.app.data.repository.ForumRepository
 import com.movchia.app.data.repository.TrafficCodeRepository
 
 /**
@@ -64,6 +67,41 @@ class AskTrafficAssistantUseCase(private val repository: TrafficCodeRepository) 
     ): Result<String> {
         if (question.isBlank()) return Result.failure(IllegalArgumentException("La pregunta está vacía"))
         return repository.askAssistant(question.trim(), history)
+    }
+}
+
+class GetForumsUseCase(private val repository: ForumRepository) {
+    suspend operator fun invoke(): Result<List<Forum>> = repository.getForums()
+}
+
+class GetForumPostsUseCase(private val repository: ForumRepository) {
+    suspend operator fun invoke(forumId: String): Result<List<ForumPost>> {
+        if (forumId.isBlank()) return Result.failure(IllegalArgumentException("Foro no especificado"))
+        return repository.getPosts(forumId)
+    }
+}
+
+/** Publica un comentario firmándolo con la sesión anónima del dispositivo. */
+class PublishForumPostUseCase(
+    private val forums: ForumRepository,
+    /** Devuelve el uid con el que se firma; en modo demo no toca Firebase. */
+    private val ensureSession: suspend () -> Result<String>,
+) {
+    suspend operator fun invoke(forumId: String, nickname: String, text: String): Result<ForumPost> {
+        val clean = text.trim()
+        if (clean.length < 5) return Result.failure(IllegalArgumentException("El comentario es muy corto."))
+        if (clean.length > 500) return Result.failure(IllegalArgumentException("Máximo 500 caracteres."))
+        if (nickname.isBlank()) return Result.failure(IllegalArgumentException("Falta el apodo."))
+        val uid = ensureSession().getOrElse { return Result.failure(it) }
+        return forums.publishPost(
+            ForumPost(
+                forumId = forumId,
+                authorId = uid,
+                nickname = nickname.trim(),
+                text = clean,
+                createdAt = System.currentTimeMillis(),
+            ),
+        )
     }
 }
 
