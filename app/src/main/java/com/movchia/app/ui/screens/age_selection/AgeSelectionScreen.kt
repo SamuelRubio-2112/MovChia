@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.movchia.app.data.model.AgeGroup
@@ -40,14 +41,18 @@ import com.movchia.app.ui.theme.ChiaTeal
 import com.movchia.app.ui.theme.ChiaYellow
 import com.movchia.app.ui.theme.White
 
-/** Rangos mostrados como chips (igual que en Figma: 0-12, 14-25, 25-59, 60+). */
-private data class AgeRangeChip(val label: String, val group: AgeGroup)
+/**
+ * Rangos mostrados como chips. Un chip por grupo de edad: el Figma mostraba
+ * 13-25 y 26-59 por separado, pero ambos llevan al mismo grupo (ADULTS) y se
+ * marcaban seleccionados a la vez, lo que confundía al usuario.
+ */
+private data class AgeRangeChip(val label: String, val group: AgeGroup, val weight: Float = 1f)
 
 private val ageRangeChips = listOf(
-    AgeRangeChip("0-12 años", AgeGroup.KIDS),
-    AgeRangeChip("13-25 años", AgeGroup.ADULTS),
-    AgeRangeChip("26-59 años", AgeGroup.ADULTS),
-    AgeRangeChip("60+ años", AgeGroup.SENIORS),
+    AgeRangeChip("Niños\n0-12 años", AgeGroup.KIDS),
+    // Etiqueta más larga: recibe más ancho para no partirse en tres líneas.
+    AgeRangeChip("Jóvenes y Adultos\n13-59 años", AgeGroup.ADULTS, weight = 1.5f),
+    AgeRangeChip("Mayores\n60+ años", AgeGroup.SENIORS),
 )
 
 @Composable
@@ -116,8 +121,15 @@ fun AgeSelectionScreen(
                     FilterChip(
                         selected = selected,
                         onClick = { viewModel.onGroupSelected(chip.group) },
-                        label = { Text(chip.label, style = MaterialTheme.typography.labelMedium) },
-                        modifier = Modifier.weight(1f),
+                        label = {
+                            Text(
+                                text = chip.label,
+                                style = MaterialTheme.typography.labelMedium,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        },
+                        modifier = Modifier.weight(chip.weight),
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = ChiaBlue,
                             selectedLabelColor = White,
