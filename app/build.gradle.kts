@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-    // Firebase: requiere app/google-services.json (ignorado por git; ver docs/firebase/SETUP.md).
+    // Firebase: Plugin de Google Services para leer google-services.json
     alias(libs.plugins.google.services)
 }
 
@@ -16,9 +16,7 @@ if (!googleServicesFile.exists()) {
 
 android {
     namespace = "com.movchia.app"
-    compileSdk {
-        version = release(37)
-    }
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.movchia.app"
@@ -32,9 +30,7 @@ android {
 
     buildTypes {
         release {
-            optimization {
-                enable = true
-            }
+            isMinifyEnabled = true
         }
     }
     compileOptions {
@@ -43,7 +39,6 @@ android {
     }
     buildFeatures {
         compose = true
-        // BuildConfig.DEBUG se usa para mostrar herramientas de desarrollo solo en debug.
         buildConfig = true
     }
 }
@@ -72,13 +67,14 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.kotlinx.serialization.json)
 
-    // Firebase (BOM controla las versiones)
+    // Firebase (BOM y dependencias)
     implementation(platform(libs.firebase.bom))
+    implementation("com.google.firebase:firebase-analytics")
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.storage)
 
-    // Media3: reproductor de video (MP4/HLS). YouTube se reproduce con WebView.
+    // Media3: reproductor de video (MP4/HLS)
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui)
 
