@@ -2,9 +2,16 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-    // Firebase: requiere app/google-services.json. Actualmente hay un placeholder;
-    // reemplázalo por el archivo real descargado desde la consola de Firebase.
+    // Firebase: requiere app/google-services.json (ignorado por git; ver docs/firebase/SETUP.md).
     alias(libs.plugins.google.services)
+}
+
+// Si falta google-services.json (clon nuevo), se copia el placeholder para que
+// el proyecto compile. Reemplázalo por el archivo real de la consola de Firebase.
+val googleServicesFile = file("google-services.json")
+if (!googleServicesFile.exists()) {
+    file("google-services.example.json").copyTo(googleServicesFile)
+    logger.warn("MovChia: se creó app/google-services.json desde el placeholder. Firebase NO funcionará hasta usar el archivo real.")
 }
 
 android {
@@ -36,6 +43,8 @@ android {
     }
     buildFeatures {
         compose = true
+        // BuildConfig.DEBUG se usa para mostrar herramientas de desarrollo solo en debug.
+        buildConfig = true
     }
 }
 
@@ -68,6 +77,10 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.storage)
+
+    // Media3: reproductor de video (MP4/HLS). YouTube se reproduce con WebView.
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
 
     // Coil: imágenes desde URL / Figma / Cloud Storage
     implementation(libs.coil.compose)

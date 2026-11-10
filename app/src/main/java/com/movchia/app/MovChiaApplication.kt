@@ -16,6 +16,7 @@ class MovChiaApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        container = DefaultAppContainer(this)
+        // El modo demo (datos en memoria sin Firebase) solo existe en debug.
+        container = DefaultAppContainer(this, allowDemoMode = BuildConfig.DEBUG)
     }
 }

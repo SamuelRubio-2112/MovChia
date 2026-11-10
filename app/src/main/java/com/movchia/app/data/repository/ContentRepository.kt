@@ -15,6 +15,7 @@ import kotlinx.coroutines.tasks.await
  */
 interface ContentRepository {
     suspend fun getContentFor(group: AgeGroup, type: ContentType? = null): Result<List<EducationalContent>>
+    suspend fun getContentById(id: String): Result<EducationalContent>
     suspend fun getQuizQuestions(group: AgeGroup): Result<List<QuizQuestion>>
     suspend fun getServicePoints(): Result<List<ServicePoint>>
 
@@ -40,6 +41,12 @@ class FirebaseContentRepository(
             .get().await()
             .documents
             .mapNotNull { doc -> doc.toObject(EducationalContent::class.java)?.copy(id = doc.id) }
+    }
+
+    override suspend fun getContentById(id: String): Result<EducationalContent> = runCatching {
+        val doc = db.collection(FirestoreCollections.CONTENTS).document(id).get().await()
+        doc.toObject(EducationalContent::class.java)?.copy(id = doc.id)
+            ?: throw NoSuchElementException("Este contenido ya no está disponible.")
     }
 
     override suspend fun getQuizQuestions(group: AgeGroup): Result<List<QuizQuestion>> = runCatching {

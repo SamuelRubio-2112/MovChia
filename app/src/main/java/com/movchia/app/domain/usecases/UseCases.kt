@@ -29,6 +29,13 @@ class GetContentForAgeGroupUseCase(private val repository: ContentRepository) {
     ): Result<List<EducationalContent>> = repository.getContentFor(group, type)
 }
 
+class GetContentByIdUseCase(private val repository: ContentRepository) {
+    suspend operator fun invoke(id: String): Result<EducationalContent> {
+        if (id.isBlank()) return Result.failure(IllegalArgumentException("Contenido no especificado"))
+        return repository.getContentById(id)
+    }
+}
+
 class GetQuizQuestionsUseCase(private val repository: ContentRepository) {
     suspend operator fun invoke(group: AgeGroup): Result<List<QuizQuestion>> =
         repository.getQuizQuestions(group)

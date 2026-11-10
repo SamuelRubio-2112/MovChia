@@ -10,6 +10,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.movchia.app.data.AppContainer
+import com.movchia.app.data.model.AgeGroup
+import com.movchia.app.data.model.ContentType
 import com.movchia.app.ui.screens.adults.AdultsHomeScreen
 import com.movchia.app.ui.screens.adults.AdultsHomeViewModel
 import com.movchia.app.ui.screens.age_selection.AgeSelectionScreen
@@ -17,6 +19,10 @@ import com.movchia.app.ui.screens.age_selection.AgeSelectionViewModel
 import com.movchia.app.ui.screens.cms_admin.AdminDashboardScreen
 import com.movchia.app.ui.screens.cms_admin.AdminLoginScreen
 import com.movchia.app.ui.screens.cms_admin.CmsAdminViewModel
+import com.movchia.app.ui.screens.content.ContentDetailScreen
+import com.movchia.app.ui.screens.content.ContentDetailViewModel
+import com.movchia.app.ui.screens.content.ContentListScreen
+import com.movchia.app.ui.screens.content.ContentListViewModel
 import com.movchia.app.ui.screens.kids.KidsHomeScreen
 import com.movchia.app.ui.screens.kids.KidsHomeViewModel
 import com.movchia.app.ui.screens.seniors.SeniorsHomeScreen
@@ -30,14 +36,22 @@ import com.movchia.app.ui.screens.traffic_code.TrafficCodeViewModel
  *
  * Splash → (edad guardada ? Home del grupo : AgeSelection)
  * AgeSelection → KidsHome | AdultsHome | SeniorsHome | AdminLogin
- * Homes → TrafficCode (manual + IA)
- * AdminLogin → AdminDashboard
+ * Homes → TrafficCode (manual + IA) | ContentList (por tipo) | ContentDetail
+ * ContentList → ContentDetail
+ * AdminLogin → AdminDashboard → ContentDetail (vista previa)
  */
 @Composable
 fun AppNavigation(
     container: AppContainer,
     navController: NavHostController = rememberNavController(),
 ) {
+    fun openList(type: ContentType, title: String) =
+        navController.navigate(Screen.ContentList(type = type.name, title = title))
+
+    fun openDetail(id: String) {
+        if (id.isNotBlank()) navController.navigate(Screen.ContentDetail(id))
+    }
+
     NavHost(navController = navController, startDestination = Screen.Splash) {
 
         composable<Screen.Splash> {
@@ -73,7 +87,13 @@ fun AppNavigation(
             KidsHomeScreen(
                 viewModel = viewModel,
                 onOpenQuiz = { navController.navigate(Screen.TrafficCode(simplified = true)) },
-                onOpenVideos = { navController.navigate(Screen.TrafficCode(simplified = true)) },
+                onOpenVideos = { openList(ContentType.CARTOON, "Dibujos de Seguridad") },
+                onOpenStory = { story ->
+                    if (story != null) openDetail(story.id) else openList(ContentType.STORY, "Cuentos")
+                },
+                onOpenCartoon = { cartoon ->
+                    if (cartoon != null) openDetail(cartoon.id) else openList(ContentType.CARTOON, "Dibujos de Seguridad")
+                },
             )
         }
 
@@ -86,7 +106,13 @@ fun AppNavigation(
                 onOpenTrafficCode = { navController.navigate(Screen.TrafficCode()) },
                 onOpenQuiz = { navController.navigate(Screen.TrafficCode(initialTab = 1)) },
                 onOpenServicePoints = { navController.navigate(Screen.TrafficCode()) },
-                onOpenNews = { navController.navigate(Screen.TrafficCode()) },
+                onOpenNews = { openList(ContentType.NEWS, "Noticias de Chía") },
+                onOpenHeadline = { headline ->
+                    if (headline != null) openDetail(headline.id) else openList(ContentType.NEWS, "Noticias de Chía")
+                },
+                onOpenCampaign = { campaign ->
+                    if (campaign != null) openDetail(campaign.id) else openList(ContentType.CAMPAIGN, "Campañas")
+                },
             )
         }
 
@@ -98,8 +124,38 @@ fun AppNavigation(
                 viewModel = viewModel,
                 onOpenSimpleManual = { navController.navigate(Screen.TrafficCode(simplified = true)) },
                 onOpenServicePoints = { navController.navigate(Screen.TrafficCode(simplified = true)) },
-                onOpenVideos = { navController.navigate(Screen.TrafficCode(simplified = true)) },
-                onOpenFaq = { navController.navigate(Screen.TrafficCode(simplified = true, initialTab = 1)) },
+                onOpenVideos = { openList(ContentType.VIDEO, "Videos explicativos") },
+                onOpenFaq = { openList(ContentType.FAQ, "Preguntas frecuentes") },
+            )
+        }
+
+        composable<Screen.ContentList> { backStackEntry ->
+            val route = backStackEntry.toRoute<Screen.ContentList>()
+            val type = ContentType.entries.firstOrNull { it.name == route.type } ?: ContentType.NEWS
+            val group = container.ageGroupStore.ageGroup.value ?: AgeGroup.ADULTS
+            val viewModel: ContentListViewModel = viewModel(
+                factory = viewModelFactory {
+                    initializer { ContentListViewModel(container.getContentForAgeGroup, group, type) }
+                },
+            )
+            ContentListScreen(
+                viewModel = viewModel,
+                title = route.title,
+                onBack = { navController.popBackStack() },
+                onOpenContent = { openDetail(it.id) },
+            )
+        }
+
+        composable<Screen.ContentDetail> { backStackEntry ->
+            val route = backStackEntry.toRoute<Screen.ContentDetail>()
+            val viewModel: ContentDetailViewModel = viewModel(
+                factory = viewModelFactory {
+                    initializer { ContentDetailViewModel(container.getContentById, container.textToSpeech, route.id) }
+                },
+            )
+            ContentDetailScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
             )
         }
 
@@ -158,6 +214,7 @@ fun AppNavigation(
                     }
                 },
                 onCreateContent = { /* TODO: pantalla 13_EditorContenido */ },
+                onOpenContent = { openDetail(it.id) },
             )
         }
     }

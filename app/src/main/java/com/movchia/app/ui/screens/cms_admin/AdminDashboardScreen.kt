@@ -43,6 +43,7 @@ fun AdminDashboardScreen(
     viewModel: CmsAdminViewModel,
     onSignedOut: () -> Unit,
     onCreateContent: () -> Unit,
+    onOpenContent: (EducationalContent) -> Unit,
 ) {
     val contents by viewModel.contents.collectAsStateWithLifecycle()
 
@@ -91,7 +92,7 @@ fun AdminDashboardScreen(
                                     subtitle = "${content.type.name} · ${content.targetGroups.joinToString { it.displayName }}",
                                     imageUrl = content.thumbnailUrl,
                                     icon = Icons.Filled.PlayArrow,
-                                    onClick = {},
+                                    onClick = { onOpenContent(content) },
                                     modifier = Modifier.weight(1f),
                                 )
                                 IconButton(onClick = { viewModel.deleteContent(content.id) }) {

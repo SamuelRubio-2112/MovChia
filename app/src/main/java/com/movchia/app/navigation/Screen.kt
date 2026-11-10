@@ -32,6 +32,19 @@ sealed interface Screen {
     @Serializable
     data class TrafficCode(val simplified: Boolean = false, val initialTab: Int = 0) : Screen
 
+    /**
+     * Listado de contenido de un tipo (noticias, videos, cuentos, FAQ) para el
+     * grupo de edad activo.
+     * @param type nombre de [com.movchia.app.data.model.ContentType].
+     * @param title título de la pantalla.
+     */
+    @Serializable
+    data class ContentList(val type: String, val title: String) : Screen
+
+    /** Visor de una pieza de contenido (texto, imagen o video). */
+    @Serializable
+    data class ContentDetail(val id: String) : Screen
+
     @Serializable
     data object AdminLogin : Screen
 

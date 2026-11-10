@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movchia.app.data.model.EducationalContent
 import com.movchia.app.ui.UiState
 import com.movchia.app.ui.components.MovChiaTopBar
 import com.movchia.app.ui.components.VideoPlaceholderComponent
@@ -54,6 +55,8 @@ fun AdultsHomeScreen(
     onOpenQuiz: () -> Unit,
     onOpenServicePoints: () -> Unit,
     onOpenNews: () -> Unit,
+    onOpenHeadline: (EducationalContent?) -> Unit,
+    onOpenCampaign: (EducationalContent?) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -85,7 +88,7 @@ fun AdultsHomeScreen(
             NewsBanner(
                 tag = "NOTICIA LOCAL",
                 title = headline?.title ?: "Nuevas ciclorrutas habilitadas en el centro de Chía",
-                onClick = onOpenNews,
+                onClick = { onOpenHeadline(headline) },
             )
 
             Text("Trámites y Aprendizaje", style = MaterialTheme.typography.titleMedium, color = ChiaBlue)
@@ -103,6 +106,7 @@ fun AdultsHomeScreen(
             VideoPlaceholderComponent(
                 source = campaign?.let { VideoSource.Url(it.mediaUrl, it.thumbnailUrl) } ?: VideoSource.None,
                 title = campaign?.title ?: "Campaña: Respeta al Peatón",
+                onPlayClick = { onOpenCampaign(campaign) },
             )
 
             if (state is UiState.Error) {

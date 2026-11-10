@@ -1,0 +1,73 @@
+rules_version = '2';
+
+// Reglas de seguridad de Firestore para MovChia.
+//
+// Roles (colección `users`, documento con id = uid de Firebase Auth):
+//   - "gestor": CRUD de contenidos y moderación de opiniones.
+//   - "root":   todo lo anterior + gestión de usuarios.
+// La ciudadanía no inicia sesión: lee el contenido publicado y puede enviar
+// opiniones (que quedan en estado PENDING hasta que un gestor las modere).
+//
+// Despliegue: `firebase deploy --only firestore` (ver docs/firebase/SETUP.md).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function role() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isStaff() {
+      return isSignedIn() && role() in ['gestor', 'root'];
+    }
+
+    function isRoot() {
+      return isSignedIn() && role() == 'root';
+    }
+
+    // Contenido educativo (videos, cuentos, noticias, campañas, FAQ).
+    // El público solo ve lo publicado; el personal ve también los borradores.
+    match /contents/{contentId} {
+      allow read: if resource.data.published == true || isStaff();
+      allow create, update, delete: if isStaff();
+    }
+
+    // Manual de Tránsito, sedes y preguntas de quiz: lectura pública.
+    match /traffic_code/{articleId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    match /service_points/{pointId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    match /quiz_questions/{questionId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    // Opiniones ciudadanas: cualquiera puede crear una (con validación);
+    // solo el personal puede leerlas, moderarlas o borrarlas.
+    match /opinions/{opinionId} {
+      allow create: if request.resource.data.keys().hasOnly(['text', 'ageGroup', 'status', 'createdAt'])
+        && request.resource.data.text is string
+        && request.resource.data.text.size() >= 5
+        && request.resource.data.text.size() <= 500
+        && request.resource.data.ageGroup in ['KIDS', 'ADULTS', 'SENIORS']
+        && request.resource.data.status == 'PENDING'
+        && request.resource.data.createdAt is int;
+      allow read, update, delete: if isStaff();
+    }
+
+    // Usuarios del CMS. Cada uno lee su propio documento; solo root administra.
+    match /users/{userId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isRoot());
+      allow write: if isRoot();
+    }
+  }
+}

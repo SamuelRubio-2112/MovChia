@@ -13,3 +13,9 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Configuración real de Firebase (usar app/google-services.example.json como plantilla)
+/app/google-services.json
+
+# Datos de sesión del compilador de Kotlin
+/.kotlin/

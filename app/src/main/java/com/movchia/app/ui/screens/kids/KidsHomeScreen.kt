@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movchia.app.data.model.EducationalContent
 import com.movchia.app.ui.UiState
 import com.movchia.app.ui.components.VideoPlaceholderComponent
 import com.movchia.app.ui.components.VideoSource
@@ -53,6 +54,8 @@ fun KidsHomeScreen(
     viewModel: KidsHomeViewModel,
     onOpenQuiz: () -> Unit,
     onOpenVideos: () -> Unit,
+    onOpenStory: (EducationalContent?) -> Unit,
+    onOpenCartoon: (EducationalContent?) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -101,14 +104,14 @@ fun KidsHomeScreen(
                     is UiState.Error -> StoryOfTheDayCard(
                         title = "Don Semáforo nos enseña",
                         quote = "\"Rojo para parar, verde para cruzar de la mano de mamá.\"",
-                        onRead = {},
+                        onRead = { onOpenStory(null) },
                     )
                     is UiState.Success -> {
                         val story = s.data.stories.firstOrNull()
                         StoryOfTheDayCard(
                             title = story?.title ?: "Don Semáforo nos enseña",
-                            quote = story?.description ?: "\"Rojo para parar, verde para cruzar de la mano de mamá.\"",
-                            onRead = {},
+                            quote = story?.description?.take(120) ?: "\"Rojo para parar, verde para cruzar de la mano de mamá.\"",
+                            onRead = { onOpenStory(story) },
                         )
                     }
                 }
@@ -119,7 +122,7 @@ fun KidsHomeScreen(
                 VideoPlaceholderComponent(
                     source = cartoon?.let { VideoSource.Url(it.mediaUrl, it.thumbnailUrl) } ?: VideoSource.None,
                     title = cartoon?.title ?: "Las Aventuras del Casco Mágico",
-                    onPlayClick = onOpenVideos,
+                    onPlayClick = { onOpenCartoon(cartoon) },
                 )
 
                 // Juegos

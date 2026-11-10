@@ -1,12 +1,7 @@
-# Add project specific R8 rules here.
-# AGP will combine all keep rule files in src/main/keepRules to pass to R8
-#
-# For more details, see
-#   https://d.android.com/r/tools/r8/keep-rules
+# Reglas de R8 del proyecto MovChia.
+# AGP combina todos los archivos de src/main/keepRules y los pasa a R8.
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Firestore deserializa los documentos por reflexión (toObject): necesita el
+# nombre de la clase, el constructor sin argumentos y los getters/setters con
+# su nombre original. Sin esta regla, en release los modelos llegan vacíos.
+-keep class com.movchia.app.data.model.** { *; }
