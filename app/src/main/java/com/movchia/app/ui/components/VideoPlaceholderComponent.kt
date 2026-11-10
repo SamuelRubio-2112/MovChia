@@ -77,7 +77,9 @@ fun VideoPlaceholderComponent(
     source: VideoSource,
     modifier: Modifier = Modifier,
     title: String? = null,
-    label: String = stringResource(R.string.video_placeholder_label),
+    label: String = stringResource(
+        if (source is VideoSource.None) R.string.video_placeholder_label else R.string.video_tap_to_play,
+    ),
     onPlayClick: () -> Unit = {},
 ) {
     val highContrast = LocalHighContrast.current

@@ -2,6 +2,7 @@
     <string name="app_name">MovChia</string>
     <string name="app_tagline">Vías Seguras · Alcaldía de Chía</string>
     <string name="video_placeholder_label">Espacio reservado para Video Educativo / Campaña</string>
+    <string name="video_tap_to_play">Toca para ver el video</string>
     <string name="cd_play_video">Reproducir video</string>
     <string name="cd_back">Volver</string>
 </resources>
