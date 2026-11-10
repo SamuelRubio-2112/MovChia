@@ -10,7 +10,6 @@ import com.movchia.app.data.model.ForumPost
 import com.movchia.app.data.model.QuizQuestion
 import com.movchia.app.data.model.ServicePoint
 import com.movchia.app.data.model.TrafficCodeArticle
-import com.movchia.app.data.repository.AuthRepository
 import com.movchia.app.data.repository.ContentRepository
 import com.movchia.app.data.repository.ForumRepository
 import com.movchia.app.data.repository.TrafficCodeRepository
@@ -102,14 +101,5 @@ class PublishForumPostUseCase(
                 createdAt = System.currentTimeMillis(),
             ),
         )
-    }
-}
-
-class SignInAdminUseCase(private val repository: AuthRepository) {
-    suspend operator fun invoke(email: String, password: String): Result<Unit> {
-        if (email.isBlank() || password.isBlank()) {
-            return Result.failure(IllegalArgumentException("Correo y contraseña son obligatorios"))
-        }
-        return repository.signIn(email, password)
     }
 }

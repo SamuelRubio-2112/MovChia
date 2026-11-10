@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.CircularProgressIndicator
@@ -20,12 +22,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.movchia.app.ui.components.LargeAccessibleButton
@@ -36,24 +40,28 @@ import com.movchia.app.ui.theme.ChiaSkyBackground
 /** Pantalla 07_LoginAdmin. */
 @Composable
 fun AdminLoginScreen(
-    viewModel: CmsAdminViewModel,
+    viewModel: AdminLoginViewModel,
     onBack: () -> Unit,
     onLoggedIn: () -> Unit,
 ) {
-    val state by viewModel.login.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val demoMode by viewModel.demoMode.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) { viewModel.restoreSession(onSuccess = onLoggedIn) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        topBar = { MovChiaTopBar(title = "Acceso Administrador", onBack = onBack) },
+        topBar = { MovChiaTopBar(title = "Acceso al panel", onBack = onBack) },
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .verticalScroll(rememberScrollState())
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(24.dp))
             Box(
                 modifier = Modifier.size(96.dp).clip(CircleShape).background(ChiaSkyBackground),
                 contentAlignment = Alignment.Center,
@@ -61,13 +69,35 @@ fun AdminLoginScreen(
                 Icon(Icons.Filled.Lock, contentDescription = null, tint = ChiaBlue, modifier = Modifier.size(44.dp))
             }
             Spacer(Modifier.height(24.dp))
-            Text("Panel de Contenido", style = MaterialTheme.typography.headlineMedium, color = ChiaBlue)
+            Text("Panel de gestión", style = MaterialTheme.typography.headlineMedium, color = ChiaBlue)
             Text(
                 "Secretaría de Movilidad de Chía",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(Modifier.height(32.dp))
+
+            if (state.restoringEmail != null) {
+                CircularProgressIndicator()
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    "Reanudando la sesión de ${state.restoringEmail}…",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                )
+                return@Column
+            }
+
+            if (demoMode) {
+                Text(
+                    "Modo demo activo: entra con cualquier correo y contraseña (rol administrador, sin Firebase).",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(Modifier.height(12.dp))
+            }
 
             OutlinedTextField(
                 value = state.email,
@@ -102,11 +132,12 @@ fun AdminLoginScreen(
                     enabled = state.email.isNotBlank() && state.password.isNotBlank(),
                 )
             }
-            Spacer(Modifier.weight(1f))
+            Spacer(Modifier.height(32.dp))
             Text(
-                "Conexión encriptada con Firebase Authentication",
+                "Solo para personal de la Secretaría con rol asignado. Conexión cifrada con Firebase Authentication.",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
             )
         }
     }

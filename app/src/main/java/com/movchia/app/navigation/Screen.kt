@@ -76,6 +76,14 @@ sealed interface Screen {
 
     @Serializable
     data object AdminDashboard : Screen
+
+    /** Editor de contenido del CMS. [id] vacío = crear uno nuevo. */
+    @Serializable
+    data class AdminContentEditor(val id: String = "") : Screen
+
+    /** Moderación de los comentarios de un foro. */
+    @Serializable
+    data class AdminForumPosts(val forumId: String, val title: String) : Screen
 }
 
 /** Pantalla de inicio que corresponde a cada grupo de edad. */

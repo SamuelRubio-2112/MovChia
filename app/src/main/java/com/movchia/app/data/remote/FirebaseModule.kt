@@ -24,6 +24,7 @@ object FirestoreCollections {
     const val OPINIONS = "opinions"
     const val FORUMS = "forums"
     const val POSTS = "posts"
+    const val USERS = "users"
 
     const val FIELD_TARGET_GROUPS = "targetGroups"
     const val FIELD_PUBLISHED = "published"
@@ -32,4 +33,5 @@ object FirestoreCollections {
     const val FIELD_OPEN = "open"
     const val FIELD_HIDDEN = "hidden"
     const val FIELD_CREATED_AT = "createdAt"
+    const val FIELD_ROLE = "role"
 }

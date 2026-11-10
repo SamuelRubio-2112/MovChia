@@ -48,6 +48,11 @@ class DemoContentRepository : ContentRepository {
         DemoData.servicePoints.firstOrNull { it.id == id }?.let { Result.success(it) }
             ?: Result.failure(NoSuchElementException("Esta sede ya no está disponible."))
 
+    override suspend fun getAllContents(): Result<List<EducationalContent>> {
+        delay(SIMULATED_LATENCY_MS)
+        return Result.success(items.values.sortedByDescending { it.publishedAt })
+    }
+
     override suspend fun upsertContent(content: EducationalContent): Result<Unit> {
         val id = content.id.ifBlank { "demo-${System.currentTimeMillis()}" }
         items[id] = content.copy(id = id)
@@ -96,19 +101,34 @@ class SwitchingContentRepository(private val select: () -> ContentRepository) : 
     override suspend fun getQuizQuestions(group: AgeGroup) = select().getQuizQuestions(group)
     override suspend fun getServicePoints() = select().getServicePoints()
     override suspend fun getServicePointById(id: String) = select().getServicePointById(id)
+    override suspend fun getAllContents() = select().getAllContents()
     override suspend fun upsertContent(content: EducationalContent) = select().upsertContent(content)
     override suspend fun deleteContent(id: String) = select().deleteContent(id)
 }
 
 class DemoForumRepository : ForumRepository {
+    private val forums = DemoData.forums.toMutableList()
     private val posts = DemoData.forumPosts.toMutableList()
 
     override suspend fun getForums(): Result<List<Forum>> =
-        Result.success(DemoData.forums.filter { it.open }.sortedByDescending { it.createdAt })
+        Result.success(forums.filter { it.open }.sortedByDescending { it.createdAt })
 
     override suspend fun getForum(id: String): Result<Forum> =
-        DemoData.forums.firstOrNull { it.id == id }?.let { Result.success(it) }
+        forums.firstOrNull { it.id == id }?.let { Result.success(it) }
             ?: Result.failure(NoSuchElementException("Este foro ya no está disponible."))
+
+    override suspend fun getAllForums(): Result<List<Forum>> =
+        Result.success(forums.sortedByDescending { it.createdAt })
+
+    override suspend fun upsertForum(forum: Forum): Result<Forum> {
+        val saved = forum.copy(id = forum.id.ifBlank { "demo-forum-${System.currentTimeMillis()}" })
+        val i = forums.indexOfFirst { it.id == saved.id }
+        if (i >= 0) forums[i] = saved else forums.add(saved)
+        return Result.success(saved)
+    }
+
+    override suspend fun getAllPosts(forumId: String, limit: Int): Result<List<ForumPost>> =
+        Result.success(posts.filter { it.forumId == forumId }.sortedByDescending { it.createdAt }.take(limit))
 
     override suspend fun getPosts(forumId: String, limit: Int): Result<List<ForumPost>> =
         Result.success(
@@ -138,6 +158,9 @@ class SwitchingForumRepository(private val select: () -> ForumRepository) : Foru
     override suspend fun getForum(id: String) = select().getForum(id)
     override suspend fun getPosts(forumId: String, limit: Int) = select().getPosts(forumId, limit)
     override suspend fun publishPost(post: ForumPost) = select().publishPost(post)
+    override suspend fun getAllForums() = select().getAllForums()
+    override suspend fun upsertForum(forum: Forum) = select().upsertForum(forum)
+    override suspend fun getAllPosts(forumId: String, limit: Int) = select().getAllPosts(forumId, limit)
     override suspend fun setPostHidden(forumId: String, postId: String, hidden: Boolean) =
         select().setPostHidden(forumId, postId, hidden)
     override suspend fun deletePost(forumId: String, postId: String) = select().deletePost(forumId, postId)

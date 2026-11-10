@@ -16,9 +16,16 @@ import com.movchia.app.ui.screens.adults.AdultsHomeScreen
 import com.movchia.app.ui.screens.adults.AdultsHomeViewModel
 import com.movchia.app.ui.screens.age_selection.AgeSelectionScreen
 import com.movchia.app.ui.screens.age_selection.AgeSelectionViewModel
+import androidx.compose.runtime.LaunchedEffect
 import com.movchia.app.ui.screens.cms_admin.AdminDashboardScreen
+import com.movchia.app.ui.screens.cms_admin.AdminDashboardViewModel
+import com.movchia.app.ui.screens.cms_admin.AdminForumsViewModel
 import com.movchia.app.ui.screens.cms_admin.AdminLoginScreen
-import com.movchia.app.ui.screens.cms_admin.CmsAdminViewModel
+import com.movchia.app.ui.screens.cms_admin.AdminLoginViewModel
+import com.movchia.app.ui.screens.cms_admin.ContentEditorScreen
+import com.movchia.app.ui.screens.cms_admin.ContentEditorViewModel
+import com.movchia.app.ui.screens.cms_admin.ForumPostsModerationScreen
+import com.movchia.app.ui.screens.cms_admin.ForumPostsModerationViewModel
 import com.movchia.app.ui.screens.content.ContentDetailScreen
 import com.movchia.app.ui.screens.content.ContentDetailViewModel
 import com.movchia.app.ui.screens.content.ContentListScreen
@@ -49,7 +56,7 @@ import com.movchia.app.ui.screens.traffic_code.TrafficCodeViewModel
  * AgeSelection → KidsHome | AdultsHome | SeniorsHome | AdminLogin
  * Homes → TrafficCode (manual + IA) | ContentList (por tipo) | ContentDetail | Quiz
  * ContentList → ContentDetail
- * AdminLogin → AdminDashboard → ContentDetail (vista previa)
+ * AdminLogin → AdminDashboard → AdminContentEditor | ContentDetail (vista previa) | AdminForumPosts
  */
 @Composable
 fun AppNavigation(
@@ -265,10 +272,10 @@ fun AppNavigation(
         }
 
         composable<Screen.AdminLogin> {
-            val viewModel: CmsAdminViewModel = viewModel(
+            val viewModel: AdminLoginViewModel = viewModel(
                 factory = viewModelFactory {
                     initializer {
-                        CmsAdminViewModel(container.signInAdmin, container.authRepository, container.contentRepository)
+                        AdminLoginViewModel(container.signInAdmin, container.authRepository, container.demoMode)
                     }
                 },
             )
@@ -284,22 +291,80 @@ fun AppNavigation(
         }
 
         composable<Screen.AdminDashboard> {
-            val viewModel: CmsAdminViewModel = viewModel(
+            // Sin sesión de personal verificada (p. ej. tras reiniciar la app) se vuelve al login.
+            val session = container.staffSession.current
+            if (session == null) {
+                LaunchedEffect(Unit) {
+                    navController.navigate(Screen.AdminLogin) {
+                        popUpTo<Screen.AdminDashboard> { inclusive = true }
+                    }
+                }
+                return@composable
+            }
+            val viewModel: AdminDashboardViewModel = viewModel(
                 factory = viewModelFactory {
                     initializer {
-                        CmsAdminViewModel(container.signInAdmin, container.authRepository, container.contentRepository)
+                        AdminDashboardViewModel(
+                            container.getAllContents,
+                            container.deleteContent,
+                            container.signOutAdmin,
+                            container.staffSession,
+                        )
                     }
+                },
+            )
+            val forumsViewModel: AdminForumsViewModel = viewModel(
+                factory = viewModelFactory {
+                    initializer { AdminForumsViewModel(container.getAllForums, container.saveForum) }
                 },
             )
             AdminDashboardScreen(
                 viewModel = viewModel,
+                forumsViewModel = forumsViewModel,
                 onSignedOut = {
                     navController.navigate(Screen.AgeSelection) {
                         popUpTo<Screen.AdminDashboard> { inclusive = true }
                     }
                 },
-                onCreateContent = { /* TODO: pantalla 13_EditorContenido */ },
-                onOpenContent = { openDetail(it.id) },
+                onCreateContent = { navController.navigate(Screen.AdminContentEditor()) },
+                onEditContent = { navController.navigate(Screen.AdminContentEditor(it.id)) },
+                onPreviewContent = { openDetail(it.id) },
+                onModerateForum = { navController.navigate(Screen.AdminForumPosts(it.id, it.title)) },
+            )
+        }
+
+        composable<Screen.AdminContentEditor> { backStackEntry ->
+            val route = backStackEntry.toRoute<Screen.AdminContentEditor>()
+            val viewModel: ContentEditorViewModel = viewModel(
+                factory = viewModelFactory {
+                    initializer { ContentEditorViewModel(container.getContentById, container.saveContent, route.id) }
+                },
+            )
+            ContentEditorScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() },
+            )
+        }
+
+        composable<Screen.AdminForumPosts> { backStackEntry ->
+            val route = backStackEntry.toRoute<Screen.AdminForumPosts>()
+            val viewModel: ForumPostsModerationViewModel = viewModel(
+                factory = viewModelFactory {
+                    initializer {
+                        ForumPostsModerationViewModel(
+                            container.getForumPostsForModeration,
+                            container.setPostHidden,
+                            container.deleteForumPost,
+                            route.forumId,
+                        )
+                    }
+                },
+            )
+            ForumPostsModerationScreen(
+                viewModel = viewModel,
+                title = route.title,
+                onBack = { navController.popBackStack() },
             )
         }
     }

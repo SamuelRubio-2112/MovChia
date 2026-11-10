@@ -2,11 +2,15 @@ package com.movchia.app.ui.screens.cms_admin
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.movchia.app.data.model.AgeGroup
+import com.movchia.app.data.model.ContentType
 import com.movchia.app.data.model.EducationalContent
 import com.movchia.app.data.repository.AuthRepository
-import com.movchia.app.data.repository.ContentRepository
+import com.movchia.app.data.session.StaffSession
+import com.movchia.app.data.session.StaffSessionStore
+import com.movchia.app.domain.usecases.DeleteContentUseCase
+import com.movchia.app.domain.usecases.GetAllContentsUseCase
 import com.movchia.app.domain.usecases.SignInAdminUseCase
+import com.movchia.app.domain.usecases.SignOutAdminUseCase
 import com.movchia.app.ui.UiState
 import com.movchia.app.ui.toUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,66 +24,109 @@ data class AdminLoginUiState(
     val password: String = "",
     val isLoading: Boolean = false,
     val error: String? = null,
+    /** Correo de la sesión que Firebase recuerda y se está verificando. */
+    val restoringEmail: String? = null,
 )
 
-/**
- * Pantallas 07_LoginAdmin, 12_AdminDashboard, 13_EditorContenido y
- * 14_ModeracionOpiniones. Base para el CMS de la Secretaría de Movilidad.
- */
-class CmsAdminViewModel(
+/** Pantalla 07_LoginAdmin: correo + contraseña y verificación del rol. */
+class AdminLoginViewModel(
     private val signInAdmin: SignInAdminUseCase,
     private val authRepository: AuthRepository,
-    private val contentRepository: ContentRepository,
+    val demoMode: StateFlow<Boolean>,
 ) : ViewModel() {
 
-    private val _login = MutableStateFlow(AdminLoginUiState())
-    val login: StateFlow<AdminLoginUiState> = _login.asStateFlow()
+    private val _uiState = MutableStateFlow(AdminLoginUiState())
+    val uiState: StateFlow<AdminLoginUiState> = _uiState.asStateFlow()
 
-    private val _contents = MutableStateFlow<UiState<List<EducationalContent>>>(UiState.Loading)
-    val contents: StateFlow<UiState<List<EducationalContent>>> = _contents.asStateFlow()
+    private var restoreAttempted = false
 
-    val isSignedIn: Boolean get() = authRepository.isSignedIn
-    val adminEmail: String? get() = authRepository.currentEmail
+    fun onEmailChanged(value: String) = _uiState.update { it.copy(email = value, error = null) }
+    fun onPasswordChanged(value: String) = _uiState.update { it.copy(password = value, error = null) }
 
-    fun onEmailChanged(value: String) = _login.update { it.copy(email = value, error = null) }
-    fun onPasswordChanged(value: String) = _login.update { it.copy(password = value, error = null) }
-
-    fun signIn(onSuccess: () -> Unit) {
-        val state = _login.value
-        _login.update { it.copy(isLoading = true, error = null) }
+    /** Reanuda la sesión de personal recordada por Firebase, si existe. Se llama una sola vez. */
+    fun restoreSession(onSuccess: () -> Unit) {
+        if (restoreAttempted) return
+        restoreAttempted = true
+        if (!authRepository.isStaffSignedIn) return
+        _uiState.update { it.copy(isLoading = true, restoringEmail = authRepository.currentEmail) }
         viewModelScope.launch {
-            signInAdmin(state.email, state.password).fold(
-                onSuccess = {
-                    _login.update { it.copy(isLoading = false, password = "") }
-                    onSuccess()
+            signInAdmin.restore().fold(
+                onSuccess = { session ->
+                    _uiState.update { it.copy(isLoading = false, restoringEmail = null) }
+                    if (session != null) onSuccess()
                 },
                 onFailure = { e ->
-                    _login.update { it.copy(isLoading = false, error = e.message ?: "No fue posible iniciar sesión") }
+                    _uiState.update { it.copy(isLoading = false, restoringEmail = null, error = e.message) }
                 },
             )
         }
     }
 
-    fun signOut() = authRepository.signOut()
+    fun signIn(onSuccess: () -> Unit) {
+        val state = _uiState.value
+        _uiState.update { it.copy(isLoading = true, error = null) }
+        viewModelScope.launch {
+            signInAdmin(state.email, state.password).fold(
+                onSuccess = {
+                    _uiState.update { it.copy(isLoading = false, password = "") }
+                    onSuccess()
+                },
+                onFailure = { e ->
+                    _uiState.update { it.copy(isLoading = false, error = e.message ?: "No fue posible iniciar sesión") }
+                },
+            )
+        }
+    }
+}
 
-    /** Carga todo el contenido publicado (todos los grupos) para el dashboard. */
-    fun loadContents() {
+/** Pantalla 12_AdminDashboard: listado de todo el contenido (publicado y borradores). */
+class AdminDashboardViewModel(
+    private val getAllContents: GetAllContentsUseCase,
+    private val deleteContent: DeleteContentUseCase,
+    private val signOutAdmin: SignOutAdminUseCase,
+    sessions: StaffSessionStore,
+) : ViewModel() {
+
+    val session: StateFlow<StaffSession?> = sessions.session
+
+    private val _contents = MutableStateFlow<UiState<List<EducationalContent>>>(UiState.Loading)
+    val contents: StateFlow<UiState<List<EducationalContent>>> = _contents.asStateFlow()
+
+    private val _filter = MutableStateFlow<ContentType?>(null)
+    val filter: StateFlow<ContentType?> = _filter.asStateFlow()
+
+    /** Mensaje puntual para un Snackbar (se consume con [consumeMessage]). */
+    private val _message = MutableStateFlow<String?>(null)
+    val message: StateFlow<String?> = _message.asStateFlow()
+
+    fun load() {
         _contents.value = UiState.Loading
         viewModelScope.launch {
-            val all = AgeGroup.entries.map { contentRepository.getContentFor(it) }
-            val failure = all.firstOrNull { it.isFailure }
-            _contents.value = if (failure != null) {
-                failure.toUiState("No pudimos cargar el contenido del CMS.")
-            } else {
-                UiState.Success(all.flatMap { it.getOrDefault(emptyList()) }.distinctBy { it.id })
-            }
+            _contents.value = getAllContents().toUiState("No pudimos cargar el contenido del panel.")
         }
     }
 
-    fun deleteContent(id: String) {
+    fun setFilter(type: ContentType?) {
+        _filter.value = type
+    }
+
+    fun delete(content: EducationalContent) {
         viewModelScope.launch {
-            contentRepository.deleteContent(id)
-            loadContents()
+            deleteContent(content.id).fold(
+                onSuccess = {
+                    _contents.update { s ->
+                        if (s is UiState.Success) UiState.Success(s.data.filterNot { it.id == content.id }) else s
+                    }
+                    _message.value = "\"${content.title}\" eliminado."
+                },
+                onFailure = { e -> _message.value = e.message ?: "No se pudo eliminar el contenido." },
+            )
         }
     }
+
+    fun consumeMessage() {
+        _message.value = null
+    }
+
+    fun signOut() = signOutAdmin()
 }

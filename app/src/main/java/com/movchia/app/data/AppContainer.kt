@@ -20,6 +20,17 @@ import com.movchia.app.data.repository.FirebaseForumRepository
 import com.movchia.app.data.repository.ForumRepository
 import com.movchia.app.data.repository.FirebaseTrafficCodeRepository
 import com.movchia.app.data.repository.TrafficCodeRepository
+import com.movchia.app.data.model.StaffRole
+import com.movchia.app.data.session.StaffSessionStore
+import com.movchia.app.domain.usecases.DeleteContentUseCase
+import com.movchia.app.domain.usecases.DeleteForumPostUseCase
+import com.movchia.app.domain.usecases.GetAllContentsUseCase
+import com.movchia.app.domain.usecases.GetAllForumsUseCase
+import com.movchia.app.domain.usecases.GetForumPostsForModerationUseCase
+import com.movchia.app.domain.usecases.SaveContentUseCase
+import com.movchia.app.domain.usecases.SaveForumUseCase
+import com.movchia.app.domain.usecases.SetPostHiddenUseCase
+import com.movchia.app.domain.usecases.SignOutAdminUseCase
 import com.movchia.app.domain.usecases.AskTrafficAssistantUseCase
 import com.movchia.app.domain.usecases.GetContentByIdUseCase
 import com.movchia.app.domain.usecases.GetForumPostsUseCase
@@ -49,6 +60,7 @@ interface AppContainer {
     val forumRepository: ForumRepository
     val contentRepository: ContentRepository
     val authRepository: AuthRepository
+    val staffSession: StaffSessionStore
     val trafficCodeRepository: TrafficCodeRepository
     val textToSpeech: TextToSpeechHelper
 
@@ -71,6 +83,17 @@ interface AppContainer {
     val getForums: GetForumsUseCase
     val getForumPosts: GetForumPostsUseCase
     val publishForumPost: PublishForumPostUseCase
+
+    // Panel de gestión (CMS)
+    val signOutAdmin: SignOutAdminUseCase
+    val getAllContents: GetAllContentsUseCase
+    val saveContent: SaveContentUseCase
+    val deleteContent: DeleteContentUseCase
+    val getAllForums: GetAllForumsUseCase
+    val saveForum: SaveForumUseCase
+    val getForumPostsForModeration: GetForumPostsForModerationUseCase
+    val setPostHidden: SetPostHiddenUseCase
+    val deleteForumPost: DeleteForumPostUseCase
 }
 
 class DefaultAppContainer(
@@ -115,7 +138,10 @@ class DefaultAppContainer(
     override val forumRepository: ForumRepository =
         SwitchingForumRepository { if (_demoMode.value) demoForums else firebaseForums }
 
-    override val authRepository: AuthRepository by lazy { FirebaseAuthRepository(FirebaseModule.auth) }
+    override val authRepository: AuthRepository by lazy {
+        FirebaseAuthRepository(FirebaseModule.auth, FirebaseModule.firestore)
+    }
+    override val staffSession = StaffSessionStore()
     override val textToSpeech: TextToSpeechHelper by lazy { TextToSpeechHelper(context) }
 
     override val saveAgeGroup by lazy { SaveAgeGroupUseCase(ageGroupStore) }
@@ -126,7 +152,19 @@ class DefaultAppContainer(
     override val getServicePointById by lazy { GetServicePointByIdUseCase(contentRepository) }
     override val getTrafficCodeArticles by lazy { GetTrafficCodeArticlesUseCase(trafficCodeRepository) }
     override val askTrafficAssistant by lazy { AskTrafficAssistantUseCase(trafficCodeRepository) }
-    override val signInAdmin by lazy { SignInAdminUseCase(authRepository) }
+    override val signInAdmin by lazy {
+        // En modo demo el panel se abre con cualquier correo y rol root (sin Firebase).
+        SignInAdminUseCase(authRepository, staffSession) { if (_demoMode.value) StaffRole.ROOT else null }
+    }
+    override val signOutAdmin by lazy { SignOutAdminUseCase(authRepository, staffSession) }
+    override val getAllContents by lazy { GetAllContentsUseCase(contentRepository) }
+    override val saveContent by lazy { SaveContentUseCase(contentRepository) }
+    override val deleteContent by lazy { DeleteContentUseCase(contentRepository) }
+    override val getAllForums by lazy { GetAllForumsUseCase(forumRepository) }
+    override val saveForum by lazy { SaveForumUseCase(forumRepository) }
+    override val getForumPostsForModeration by lazy { GetForumPostsForModerationUseCase(forumRepository) }
+    override val setPostHidden by lazy { SetPostHiddenUseCase(forumRepository) }
+    override val deleteForumPost by lazy { DeleteForumPostUseCase(forumRepository) }
     override val getForums by lazy { GetForumsUseCase(forumRepository) }
     override val getForumPosts by lazy { GetForumPostsUseCase(forumRepository) }
     override val publishForumPost by lazy {

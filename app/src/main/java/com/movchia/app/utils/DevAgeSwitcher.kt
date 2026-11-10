@@ -68,9 +68,10 @@ fun DevAgeSwitcher(
     Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 12.dp, bottom = 100.dp),
-            horizontalAlignment = Alignment.End,
+                // Abajo a la izquierda para no tapar los FAB y botones de enviar de la app.
+                .align(Alignment.BottomStart)
+                .padding(start = 12.dp, bottom = 100.dp),
+            horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             if (expanded) {
@@ -92,7 +93,7 @@ fun DevAgeSwitcher(
                 }
                 DevChip(text = if (seeding) "Sembrando…" else "Sembrar datos en Firestore") {
                     if (seeding) return@DevChip
-                    if (!container.authRepository.isSignedIn) {
+                    if (!container.authRepository.isStaffSignedIn) {
                         toast("Inicia sesión como administrador (Acceso Admin) antes de sembrar.")
                         return@DevChip
                     }

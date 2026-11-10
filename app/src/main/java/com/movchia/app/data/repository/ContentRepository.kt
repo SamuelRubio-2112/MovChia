@@ -20,7 +20,9 @@ interface ContentRepository {
     suspend fun getServicePoints(): Result<List<ServicePoint>>
     suspend fun getServicePointById(id: String): Result<ServicePoint>
 
-    // Operaciones del CMS (requieren sesión de administrador)
+    // Operaciones del CMS (requieren sesión de personal)
+    /** Todo el contenido, incluidos borradores, del más reciente al más antiguo. */
+    suspend fun getAllContents(): Result<List<EducationalContent>>
     suspend fun upsertContent(content: EducationalContent): Result<Unit>
     suspend fun deleteContent(id: String): Result<Unit>
 }
@@ -69,6 +71,14 @@ class FirebaseContentRepository(
         db.collection(FirestoreCollections.SERVICE_POINTS).document(id).get().await()
             .let { doc -> doc.toObject(ServicePoint::class.java)?.copy(id = doc.id) }
             ?: throw NoSuchElementException("Esta sede ya no está disponible.")
+    }
+
+    override suspend fun getAllContents(): Result<List<EducationalContent>> = runCatching {
+        db.collection(FirestoreCollections.CONTENTS)
+            .orderBy(FirestoreCollections.FIELD_PUBLISHED_AT, Query.Direction.DESCENDING)
+            .get().await()
+            .documents
+            .mapNotNull { doc -> doc.toObject(EducationalContent::class.java)?.copy(id = doc.id) }
     }
 
     override suspend fun upsertContent(content: EducationalContent): Result<Unit> = runCatching {
