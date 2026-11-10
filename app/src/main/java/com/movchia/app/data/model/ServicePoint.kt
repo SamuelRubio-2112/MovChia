@@ -15,6 +15,8 @@ data class ServicePoint(
     val phone: String = "",
     val schedule: String = "",
     val email: String = "",
+    /** Enlace a la ficha de Google Maps (maps.app.goo.gl). Si existe, "Cómo llegar" lo usa. */
+    val mapsUrl: String = "",
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
 )

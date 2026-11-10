@@ -251,8 +251,8 @@ object DemoData {
         ),
     )
 
-    // Datos tomados del pie de página de los avisos oficiales (docs/material).
-    // Horario y coordenadas pendientes de confirmar con la Secretaría.
+    // Dirección, PBX y correo: pie de página de los avisos oficiales (docs/material).
+    // Horario confirmado por el equipo. Enlaces y coordenadas: fichas de Google Maps.
     val servicePoints: List<ServicePoint> = listOf(
         ServicePoint(
             id = "sede-secretaria-movilidad",
@@ -261,6 +261,19 @@ object DemoData {
             phone = "(601) 884 4444 ext. 3505",
             schedule = "Lunes a viernes, 8:00 a.m. a 5:00 p.m.",
             email = "correspondencia.chia@datatools.com.co",
+            latitude = 4.8638403,
+            longitude = -74.0551414,
+            mapsUrl = "https://maps.app.goo.gl/DvQy44QaVdPp25j87",
+        ),
+        ServicePoint(
+            id = "sede-transito-transporte",
+            name = "Secretaría de Tránsito y Transporte de Chía",
+            address = "Diagonal 17 No. 6-108, Chía (Cundinamarca)",
+            phone = "(601) 884 4444",
+            schedule = "Lunes a viernes, 8:00 a.m. a 5:00 p.m.",
+            latitude = 4.86381,
+            longitude = -74.05509,
+            mapsUrl = "https://maps.app.goo.gl/ZX4RVgGzzyCp81ng7",
         ),
     )
 

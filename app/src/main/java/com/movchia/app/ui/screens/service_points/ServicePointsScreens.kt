@@ -265,6 +265,10 @@ private fun ErrorBlock(message: String, onRetry: () -> Unit, modifier: Modifier 
  * coordenadas se usan; si no, se busca por dirección. Sin API key ni mapa embebido.
  */
 private fun openInMaps(context: android.content.Context, point: ServicePoint) {
+    if (point.mapsUrl.isNotBlank()) {
+        runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(point.mapsUrl))) }
+            .onSuccess { return }
+    }
     val label = Uri.encode(point.name)
     val uri = if (point.latitude != 0.0 && point.longitude != 0.0) {
         Uri.parse("geo:${point.latitude},${point.longitude}?q=${point.latitude},${point.longitude}($label)")
